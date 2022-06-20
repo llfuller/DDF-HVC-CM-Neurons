@@ -3,7 +3,7 @@
 
 Notes on DDF algorithm (from readme of Randall Clark's github repo):
 
-# DDF-Applications-to-Neurons
+# DDF-Applications-to-Neurons (Originally written by Randall Clark below)
 
 This Repository provides python code for performing DDF on a Neuron. There are two special things about this code that make it different than the usual Radial Basis Code I have in another repository. The first is that it uses Time Delay Dimensions, this is how we overcome the obstacle of only have 1 dimension of observed data; the process is actually quite simple, we just create extra dimensions from the observed data set that include a time delay. The code already does this step for you (the functions will have comments explaining this), and you will only need to input 1 dimension of data into the functions and specify how many time delay dimensions(D) you want and how large you want the delays(tau) to be. The second difference is that we include a polynomial term in the vector field represntation; originally, we only needed a sum of radial basis expansions, now we include a 1st order term polynomial, the current. The Function representation now looks like this:
 f(V,t) = sum(RBF(V(t),c_q)) + w*I(t)
