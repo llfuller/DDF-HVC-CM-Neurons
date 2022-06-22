@@ -2,6 +2,12 @@ import numpy as np
 from scipy.integrate import odeint
 from scipy import interpolate
 import matplotlib.pyplot as plt
+
+"""
+A Python script that doesn't work for whatever reason (probably an index error). So don't use this script unless it is fixed.
+Julia script developed by Dr. Jason Platt, based on Nogaret's HVC x-projecting neuron model, and translated to Python.
+"""
+
 neqs = 14
 Vtemp = 13. # kT/Ze : temperature equivalent voltage for Ca ions (2+) - mV */
 
