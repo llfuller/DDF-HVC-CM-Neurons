@@ -5,6 +5,9 @@
 
 
 from TimeDelay_Neuron_DDF_GaussianForm import *
+import Fourier_Power_Spectrum
+import plotting_utilities
+import save_utilities
 import numpy as np
 import time
 import matplotlib.pyplot as plt
@@ -57,6 +60,7 @@ for neuron_directory_index in range(len(directories_list)):
             continue # skip this iteration if the filename is on the do_not_use_list
         if a_filename != "2014_09_10_0013.abf": #"2014_12_11_0017.abf":#"2014_09_10_0013.abf":#"2014_12_11_0017.abf":
             continue # want to try predicting only this neuron since it's complex and most interesting
+        directory_to_store_plots = "plots/"+neuron_directory+str(a_filename[:-4])+"/"
         # Code for 2014 Meliza CM data
         # there is a constant junction potential offset that needs to be applied to the voltage
         junction_potential = pq.Quantity(11.6, 'mV')  # measured at 32 C (NOTE: I'm not completely sure if this applies to all measurements of CM in these directories. I should ask Prof. Meliza)
@@ -71,8 +75,11 @@ for neuron_directory_index in range(len(directories_list)):
         # each sweep (here, block.segments[0]) has one or more channels. Channel 0 is always V and channel 1 is always I.
         V = (sweep).analogsignals[0] - junction_potential
         I = (sweep).analogsignals[1]
-        t = V.times - V.t_start #measured in seconds
-        TT = ((t[1]-t[0])*1000).magnitude #this is milliseconds
+        t = 1000*(V.times - V.t_start) #measured in ms
+        current_units = "pA"
+        voltage_units = "mV"
+        time_units = "ms"
+        TT = ((t[1]-t[0])).magnitude #this is milliseconds
         V_and_I_arr = np.concatenate((V.magnitude, I.magnitude),axis=1)
         t_arr = np.array([t]).transpose()
         # make directory for storing data in .txt form if it doesn't exist yet
@@ -86,236 +93,121 @@ for neuron_directory_index in range(len(directories_list)):
         imported_data = np.loadtxt(directory_to_store_txt_data+str(a_filename[:-4])+"_VIt.txt")
         loaded_V = imported_data[:,0]
         loaded_I = imported_data[:,1]
-
+        loaded_t = imported_data[:,2]
 
         total_num_timesteps_in_data = len(loaded_V)
         train_timestep_end = round(total_num_timesteps_in_data*5.0/6.0)
-        print("Train timestep end:"+str(train_timestep_end))
-        print("Shape of loaded V:"+str(loaded_V.shape))
         Voltage_train = loaded_V[:train_timestep_end]
-        print("Shape of Voltage train is "+str(Voltage_train.shape))
         Current_train = loaded_I[:train_timestep_end]
+        Time_train    = loaded_t[:train_timestep_end]
         Voltage_test = loaded_V[train_timestep_end:total_num_timesteps_in_data]
         Current_test = loaded_I[train_timestep_end:total_num_timesteps_in_data]
+        Time_test    = loaded_t[train_timestep_end:total_num_timesteps_in_data]
         length = Voltage_train.shape[0]-1000 # - 1000 just to give breathing room
         PreLength = Voltage_test.shape[0]-1000 # - 1000 just to give breathing room
+        print("Train timestep end:"+str(train_timestep_end))
+        print("Shape of loaded V:"+str(loaded_V.shape))
+        print("Shape of Voltage train is "+str(Voltage_train.shape))
 
-        # make directory to save plots to if it doesn't yet exist
-        directory_to_store_plots = "plots/"+neuron_directory+str(a_filename[:-4])+"/"
-        if not os.path.isdir(directory_to_store_plots):
-            os.mkdir(directory_to_store_plots)
+        # # make directory to save plots to if it doesn't yet exist
+        # if not os.path.isdir(directory_to_store_plots):
+        #     os.mkdir(directory_to_store_plots)
 
         # ===============================  POWER SPECTRA  =====================================
-
         # FFT Train
-        sampling_rate = 1.0/float(t[2]-t[1])
-        # print("Sampling rate is "+str(sampling_rate))
-        # print("Length of V is " +str(np.shape(Voltage_train)))
-        fourier_transform = np.fft.rfft(Current_train)
-        abs_fourier_transform = np.abs(fourier_transform)
-        power_spectrum = np.square(abs_fourier_transform)
-        # print("Length of power_spectrum is " +str(np.shape(power_spectrum)))
-        frequency = np.linspace(0, sampling_rate/2, len(power_spectrum))
-        # print("Number of frequencies plotted is " +str(np.shape(frequency)))
-        delta_freq = frequency[3]-frequency[2]
-        # print("Frequency spacing is " +str(delta_freq))
+        freq_units = "kHz"  # frequency units
+        sampling_rate = 1.0/float(t[2]-t[1]) # frequency (1/ms = kHz)
+        FPS_list, freq_array = Fourier_Power_Spectrum.calc_Fourier_power_spectrum([Current_train, Voltage_train], Time_train)
+        delta_freq = freq_array[3]-freq_array[2]
+        save_and_or_display = "save and display"
 
-        #--------------- Current --------------
-        # Training Current with no modifications
-        plt.figure()
-        plt.plot(frequency, power_spectrum/np.max(np.abs(power_spectrum)))
-        plt.title("Power(freq) of current_train (Neuron "+str(neuron_name_list[neuron_directory_index])+'_'+str(a_filename[:-4])+")")
-        plt.xlabel("Frequency (Hz)")
-        plt.ylabel("Normalized Power (1.0 = max from whole spectrum)")
-        plt.savefig(directory_to_store_plots+"Power spectrum of training current (Neuron "+str(neuron_name_list[neuron_directory_index])+'_'+str(a_filename[:-4])+")_full_data.png")
-        plt.show()
-        np.savetxt(directory_to_store_txt_data + "Fourier_analysis/" + str(a_filename[:-4]) + "_Fourier_Spectrum_training_current-full_data.txt",
-                   np.column_stack((frequency, power_spectrum)))
-
-        freq_without_0_index = frequency[1:]
+        freq_without_0_index = freq_array[1:]
+        power_spectrum = FPS_list[0]
         normalized_power_spec_without_0_index = power_spectrum[1:] / np.max(np.abs(power_spectrum[1:]))
 
-
-        # Training Current - No index 0, Normalized, extremely short window
-        plt.figure()
-        plt.plot(freq_without_0_index, normalized_power_spec_without_0_index)
-        plt.title("Power(freq) of current_train (Neuron "+str(neuron_name_list[neuron_directory_index])+'_'+str(a_filename[:-4])+")")
-        plt.xlim((0, 5))
-        plt.xlabel("Frequency (Hz)")
-        plt.ylabel("Normalized Power (1.0 = max from whole spectrum)")
-        plt.savefig(directory_to_store_plots+"Power spectrum of training current (Neuron "+str(neuron_name_list[neuron_directory_index])+'_'+str(a_filename[:-4])+")_last_freq_shown=5.png")
-        plt.show()
-        np.savetxt(directory_to_store_txt_data + "Fourier_analysis/" + str(a_filename[:-4]) + "_Fourier_Spectrum_training_current-_last_freq_shown=5.txt",
-                   np.column_stack((freq_without_0_index[:int(round(5.0/delta_freq))], normalized_power_spec_without_0_index[:int(round(5.0/delta_freq))])))
-
-
-        # Training Current - No index 0, Normalized, short window
-        plt.figure()
-        plt.plot(freq_without_0_index, normalized_power_spec_without_0_index)
-        plt.title("Power(freq) of current_train (Neuron "+str(neuron_name_list[neuron_directory_index])+'_'+str(a_filename[:-4])+")")
-        plt.xlim((0, 75))
-        plt.xlabel("Frequency (Hz)")
-        plt.ylabel("Normalized Power (1.0 = max from whole spectrum)")
-        plt.savefig(directory_to_store_plots+"Power spectrum of training current (Neuron "+str(neuron_name_list[neuron_directory_index])+'_'+str(a_filename[:-4])+")_last_freq_shown=75.png")
-        plt.show()
-        np.savetxt(directory_to_store_txt_data + "Fourier_analysis/" + str(a_filename[:-4]) + "_Fourier_Spectrum_training_current-_last_freq_shown=75.txt",
-                   np.column_stack((freq_without_0_index[:int(round(75.0/delta_freq))], normalized_power_spec_without_0_index[:int(round(75.0/delta_freq))])))
-
-        # Training Current - No index 0, Normalized, medium window
-        plt.figure()
-        plt.plot(freq_without_0_index, normalized_power_spec_without_0_index)
-        plt.title("Power(freq) of current_train (Neuron "+str(neuron_name_list[neuron_directory_index])+'_'+str(a_filename[:-4])+")")
-        plt.xlim((0, 150))
-        plt.xlabel("Frequency (Hz)")
-        plt.ylabel("Normalized Power (1.0 = max from whole spectrum)")
-        plt.savefig(directory_to_store_plots+"Power spectrum of training current (Neuron "+str(neuron_name_list[neuron_directory_index])+'_'+str(a_filename[:-4])+")_last_freq_shown=150.png")
-        plt.show()
-        np.savetxt(directory_to_store_txt_data + "Fourier_analysis/" + str(a_filename[:-4]) + "_Fourier_Spectrum_training_current-_last_freq_shown=150.txt",
-                   np.column_stack((freq_without_0_index[:int(round(150.0/delta_freq))], normalized_power_spec_without_0_index[:int(round(150.0/delta_freq))])))
-
-        # Training Current - No index 0, Normalized, long window
-        plt.figure()
-        plt.plot(freq_without_0_index, normalized_power_spec_without_0_index)
-        plt.title("Power(freq) of current_train (Neuron "+str(neuron_name_list[neuron_directory_index])+'_'+str(a_filename[:-4])+")")
-        plt.xlim((0, 300))
-        plt.xlabel("Frequency (Hz)")
-        plt.ylabel("Normalized Power (1.0 = max from whole spectrum)")
-        plt.savefig(directory_to_store_plots+"Power spectrum of training current (Neuron "+str(neuron_name_list[neuron_directory_index])+'_'+str(a_filename[:-4])+")_last_freq_shown=300.png")
-        plt.show()
-        np.savetxt(directory_to_store_txt_data + "Fourier_analysis/" + str(a_filename[:-4]) + "_Fourier_Spectrum_training_current-_last_freq_shown=300.txt",
-                   np.column_stack((freq_without_0_index[:int(round(300.0/delta_freq))], normalized_power_spec_without_0_index[:int(round(300.0/delta_freq))])))
+        #--------------- Current FPS Plots --------------
+        # Training Current with no modifications
+        fig = plotting_utilities.plotting_quantity(x_arr = freq_array, y_arr = power_spectrum/np.max(np.abs(power_spectrum)),
+                                                   title = "Power(freq) of current_train (Neuron "+str(neuron_name_list[neuron_directory_index])+'_'+str(a_filename[:-4])+")",
+                                                   xlabel = "Frequency (kHz)",
+                                                   ylabel = "Normalized Power (1.0 = max from whole spectrum)",
+                                                   save_and_or_display= save_and_or_display,
+                                                   save_location=directory_to_store_plots+"Power spectrum of training current (Neuron "+str(neuron_name_list[neuron_directory_index])+'_'+str(a_filename[:-4])+")_full_data.png",
+                                                   xlim=None)
+        save_utilities.save_text(data = np.column_stack((freq_array, power_spectrum)),
+                                 a_str = save_and_or_display,
+                                 save_location = directory_to_store_txt_data + "Fourier_analysis/" + str(a_filename[:-4]) + "_Fourier_Spectrum_training_current-full_data.txt")
 
 
-        # --------------- Voltage --------------
-        fourier_transform = np.fft.rfft(Voltage_train)
-        abs_fourier_transform = np.abs(fourier_transform)
-        power_spectrum = np.square(abs_fourier_transform)
-        frequency = np.linspace(0, sampling_rate/2, len(power_spectrum))
+        # Training Current - No index 0, Normalized, many windows
+        for window_size in [5, 75, 150, 300]:
+            final_index = int(round(float(window_size) / delta_freq))
+            fig = plotting_utilities.plotting_quantity(x_arr = freq_without_0_index, y_arr = normalized_power_spec_without_0_index,
+                                                       title = "Power(freq) of current_train (Neuron "+str(neuron_name_list[neuron_directory_index])+'_'+str(a_filename[:-4])+")",
+                                                       xlabel = "Frequency (kHz)",
+                                                       ylabel = "Normalized Power (1.0 = max from [1:])",
+                                                       save_and_or_display= save_and_or_display,
+                                                       save_location=directory_to_store_plots+"Power spectrum of training current (Neuron "+str(neuron_name_list[neuron_directory_index])+'_'+str(a_filename[:-4])+")_last_freq_shown="+str(window_size)+".png",
+                                                       xlim=(0, window_size))
+            save_utilities.save_text(data = np.column_stack((freq_without_0_index[:final_index], normalized_power_spec_without_0_index[:final_index])),
+                                     a_str = save_and_or_display,
+                                     save_location = directory_to_store_txt_data + "Fourier_analysis/" + str(a_filename[:-4]) + "_Fourier_Spectrum_training_current-_last_freq_shown="+str(window_size)+".txt")
+
+
+        # --------------- Voltage FPS Plots --------------
+        power_spectrum = FPS_list[1]
+        # frequency = np.linspace(0, sampling_rate/2, len(power_spectrum))
+        normalized_power_spec_without_0_index = power_spectrum[1:] / np.max(np.abs(power_spectrum[1:]))
+
 
         # Training Voltage with no modifications
-        plt.figure()
-        plt.plot(frequency, power_spectrum / np.max(np.abs(power_spectrum)))
-        plt.title("Power(freq) of voltage_train (Neuron " + str(neuron_name_list[neuron_directory_index]) + '_' + str(
-            a_filename[:-4]) + ")")
-        # print("Claimed frequency resolution: "+str(frequency[3]-frequency[2]))
-        plt.xlabel("Frequency (Hz)")
-        plt.ylabel("Normalized Power (1.0 = max from [1:])")
-        plt.savefig(directory_to_store_plots + "Power spectrum of training voltage (Neuron " + str(
-            neuron_name_list[neuron_directory_index]) + '_' + str(a_filename[:-4]) + ")_full_data.png")
-        plt.show()
-        np.savetxt(directory_to_store_txt_data + str(a_filename[:-4]) + "_Fourier_Spectrum_training_voltage-full_data.txt",
-                   np.column_stack((frequency, power_spectrum)))
-
-        # Training Voltage - No index 0, Normalized, extremely short window
-        freq_without_0_index = frequency[1:]
-        normalized_power_spec_without_0_index = power_spectrum[1:] / np.max(np.abs(power_spectrum[1:]))
-
-        plt.figure()
-        plt.plot(freq_without_0_index, normalized_power_spec_without_0_index)
-        plt.title("Power(freq) of voltage_train (Neuron "+str(neuron_name_list[neuron_directory_index])+'_'+str(a_filename[:-4])+")")
-        plt.xlim((0, 5))
-        plt.xlabel("Frequency (Hz)")
-        plt.ylabel("Normalized Power (1.0 = max from [1:])")
-        plt.savefig(directory_to_store_plots+"Power spectrum of training voltage (Neuron "+str(neuron_name_list[neuron_directory_index])+'_'+str(a_filename[:-4])+")_last_freq_shown=5.png")
-        plt.show()
-        final_index = int(round(5.0/delta_freq))
-        np.savetxt(directory_to_store_txt_data + "Fourier_analysis/" + str(a_filename[:-4]) + "_Fourier_Spectrum_training_voltage-_last_freq_shown=5.txt",
-                   np.column_stack((freq_without_0_index[:final_index], normalized_power_spec_without_0_index[:final_index])))
+        fig = plotting_utilities.plotting_quantity(x_arr = freq_without_0_index, y_arr = power_spectrum/np.max(np.abs(power_spectrum)),
+                                                   title = "Power(freq) of voltage_train (Neuron " + str(neuron_name_list[neuron_directory_index]) + '_' + str(a_filename[:-4]) + ")",
+                                                   xlabel = "Frequency (kHz)",
+                                                   ylabel = "Normalized Power (1.0 = max from whole spectrum)",
+                                                   save_and_or_display= save_and_or_display,
+                                                   save_location=directory_to_store_plots + "Power spectrum of training voltage (Neuron " + str(neuron_name_list[neuron_directory_index]) + '_' + str(a_filename[:-4]) + ")_full_data.png",
+                                                   xlim=None)
+        save_utilities.save_text(data = np.column_stack((freq_array, power_spectrum)),
+                                 a_str = save_and_or_display,
+                                 save_location = directory_to_store_txt_data + "Fourier_analysis/" + str(a_filename[:-4]) + "_Fourier_Spectrum_training_voltage-full_data.txt")
 
 
-        # Training Voltage - No index 0, Normalized, short window
-        freq_without_0_index = frequency[1:]
-        normalized_power_spec_without_0_index = power_spectrum[1:] / np.max(np.abs(power_spectrum[1:]))
-
-        plt.figure()
-        plt.plot(freq_without_0_index, normalized_power_spec_without_0_index)
-        plt.title("Power(freq) of voltage_train (Neuron "+str(neuron_name_list[neuron_directory_index])+'_'+str(a_filename[:-4])+")")
-        plt.xlim((0, 75))
-        plt.xlabel("Frequency (Hz)")
-        plt.ylabel("Normalized Power (1.0 = max from [1:])")
-        plt.savefig(directory_to_store_plots+"Power spectrum of training voltage (Neuron "+str(neuron_name_list[neuron_directory_index])+'_'+str(a_filename[:-4])+")_last_freq_shown=75.png")
-        plt.show()
-        final_index = int(round(75.0/delta_freq))
-        np.savetxt(directory_to_store_txt_data + "Fourier_analysis/" + str(a_filename[:-4]) + "_Fourier_Spectrum_training_voltage-_last_freq_shown=75.txt",
-                   np.column_stack((freq_without_0_index[:final_index], normalized_power_spec_without_0_index[:final_index])))
-
-
-        # Training Voltage - No index 0, Normalized, medium window
-        plt.figure()
-        plt.plot(freq_without_0_index, normalized_power_spec_without_0_index)
-        plt.title("Power(freq) of voltage_train (Neuron "+str(neuron_name_list[neuron_directory_index])+'_'+str(a_filename[:-4])+")")
-        plt.xlim((0, 150))
-        plt.xlabel("Frequency (Hz)")
-        plt.ylabel("Normalized Power (1.0 = max from [1:])")
-        plt.savefig(directory_to_store_plots+"Power spectrum of training voltage (Neuron "+str(neuron_name_list[neuron_directory_index])+'_'+str(a_filename[:-4])+")_last_freq_shown=150.png")
-        plt.show()
-        final_index = int(round(150.0/delta_freq))
-        np.savetxt(directory_to_store_txt_data + "Fourier_analysis/" + str(a_filename[:-4]) + "_Fourier_Spectrum_training_voltage-_last_freq_shown=150.txt",
-                   np.column_stack((freq_without_0_index[:final_index], normalized_power_spec_without_0_index[:final_index])))
-
-
-        # Training Voltage - No index 0, Normalized, long window
-        plt.figure()
-        plt.plot(freq_without_0_index, normalized_power_spec_without_0_index)
-        plt.title("Power(freq) of voltage_train (Neuron " + str(neuron_name_list[neuron_directory_index]) + '_' + str(
-            a_filename[:-4]) + ")")
-        plt.xlim((0, 300))
-        # print("Claimed frequency resolution: "+str(frequency[3]-frequency[2]))
-        plt.xlabel("Frequency (Hz)")
-        plt.ylabel("Normalized Power (1.0 = max from [1:])")
-        plt.savefig(directory_to_store_plots + "Power spectrum of training voltage (Neuron " + str(
-            neuron_name_list[neuron_directory_index]) + '_' + str(a_filename[:-4]) + ")_last_freq_shown=300.png")
-        plt.show()
-        final_index = int(round(300.0/delta_freq))
-        np.savetxt(directory_to_store_txt_data + "Fourier_analysis/" + str(a_filename[:-4]) + "_Fourier_Spectrum_training_voltage-_last_freq_shown=300.txt",
-                   np.column_stack((freq_without_0_index[:final_index], normalized_power_spec_without_0_index[:final_index])))
+        # Training Current - No index 0, Normalized, many windows
+        for window_size in [5, 75, 150, 300]:
+            final_index = int(round(float(window_size) / delta_freq))
+            fig = plotting_utilities.plotting_quantity(x_arr = freq_without_0_index, y_arr = normalized_power_spec_without_0_index,
+                                                       title = "Power(freq) of voltage_train (Neuron "+str(neuron_name_list[neuron_directory_index])+'_'+str(a_filename[:-4])+")",
+                                                       xlabel = "Frequency (kHz)",
+                                                       ylabel = "Normalized Power (1.0 = max from [1:])",
+                                                       save_and_or_display= save_and_or_display,
+                                                       save_location=directory_to_store_plots+"Power spectrum of training voltage (Neuron "+str(neuron_name_list[neuron_directory_index])+'_'+str(a_filename[:-4])+")_last_freq_shown="+str(window_size)+".png",
+                                                       xlim=(0, window_size))
+            save_utilities.save_text(data = np.column_stack((freq_without_0_index[:final_index], normalized_power_spec_without_0_index[:final_index])),
+                                     a_str = save_and_or_display,
+                                     save_location = directory_to_store_txt_data + "Fourier_analysis/" + str(a_filename[:-4]) + "_Fourier_Spectrum_training_voltage-_last_freq_shown="+str(window_size)+".txt")
 
         # ===============================  END OF POWER SPECTRA  =====================================
+        # ===============================  Plotting training and testing current and voltage  =====================================
+        plotting_utilities.plotting_quantity(x_arr = Time_train, y_arr = Current_train, title = "Training Current",
+                                             xlabel = "Time ("+str(time_units)+")", ylabel = "Current ("+str(current_units)+")",
+                                             save_and_or_display="save and display",
+                                             save_location=directory_to_store_plots+"Train 1 first half Test 1 second half"+" Training Current.png")
+        plotting_utilities.plotting_quantity(x_arr = Time_train, y_arr = Voltage_train, title = "Training Voltage",
+                                             xlabel = "Time ("+str(time_units)+")", ylabel = "Voltage ("+str(voltage_units)+")",
+                                             save_and_or_display="save and display",
+                                             save_location=directory_to_store_plots+"Train 1 first half Test 1 second half"+" Training Voltage.png")
 
+        plotting_utilities.plotting_quantity(x_arr = Time_test, y_arr = Current_test, title = "Test Current",
+                                             xlabel = "Time ("+str(time_units)+")", ylabel = "Current ("+str(current_units)+")",
+                                             save_and_or_display="save and display",
+                                             save_location=directory_to_store_plots+"Train 1 first half Test 1 second half"+" Test Current.png")
+        plotting_utilities.plotting_quantity(x_arr = Time_test, y_arr = Voltage_test, title = "Test Voltage",
+                                             xlabel = "Time ("+str(time_units)+")", ylabel = "Voltage ("+str(voltage_units)+")",
+                                             save_and_or_display="save and display",
+                                             save_location=directory_to_store_plots+"Train 1 first half Test 1 second half"+" Test Voltage.png")
 
-        # plt.figure()
-        # plt.plot(loaded_V_1, color='blue')
-        # plt.title("Training Voltage")
-        # plt.ylabel("Voltage (mV)")
-        # plt.xlabel("Timestep in file (each timestep = 0.02ms)")
-        # plt.savefig(str(neuron_name_list[use_neuron_index])+"Train 1 first half Test 1 second half"+" Training Voltage.png")
-        # plt.show()
-
-        plt.figure()
-        plt.plot(Voltage_train, color='blue')
-        plt.title("Training Voltage")
-        plt.ylabel("Voltage (mV)")
-        plt.xlabel("Timestep in file (each timestep = "+str(TT)+"ms)")
-        plt.savefig(directory_to_store_plots+"Train 1 first half Test 1 second half"+" Training Voltage.png")
-        plt.show()
-        plt.figure()
-        plt.plot(Current_train, color='blue')
-        plt.title("Training Current")
-        plt.ylabel("Current (pA)")
-        plt.xlabel("Timestep in file (each timestep = "+str(TT)+"ms)")
-        plt.savefig(directory_to_store_plots+"Train 1 first half Test 1 second half"+" Training Current.png")
-        plt.show()
-
-        plt.figure()
-        plt.plot(Voltage_test, color='orange')
-        plt.title("Test Voltage")
-        plt.ylabel("Voltage (mV)")
-        plt.xlabel("Timestep in file (each timestep "+str(TT)+"ms)")
-        plt.savefig(directory_to_store_plots+"Train 1 first half Test 1 second half"+" Test Voltage.png")
-        plt.show()
-        plt.figure()
-        plt.plot(Current_test, color='orange')
-        plt.title("Test Current")
-        plt.ylabel("Current (pA)")
-        plt.xlabel("Timestep in file (each timestep "+str(TT)+"ms)")
-        plt.savefig(directory_to_store_plots+"Train 1 first half Test 1 second half"+" Test Current.png")
-        plt.show()
-
-        print("DONE HERE")
-        # In[4]:
-
-        tau = 3
-        D = 3
+        # =============================== Training and Prediction  =====================================
         for tau in range(2,10):
             for D in range(2,10):
                 print("========================New tau and D combination ==================")
@@ -325,7 +217,7 @@ for neuron_directory_index in range(len(directories_list)):
                 Xdata = Voltage_train
                 print("Shape of Xdata is "+str(Xdata.shape))
                 NoCenters_no_thresh = 500
-                NoCenters_above_thresh = 50
+                # NoCenters_above_thresh = 50
                 DDF = Gauss()
                 # Combine centers above threshold with centers determined by kmeans
                 Centers_k_means = DDF.KmeanCenter(Xdata,NoCenters_no_thresh,D,length,tau);
@@ -333,14 +225,14 @@ for neuron_directory_index in range(len(directories_list)):
                 print("Time to find k centers: "+str(time_k_centers_done-time_start))
                 temp_array = copy.deepcopy(Xdata)
                 temp_array[temp_array<-50]=-100
-                Centers_above_thresh = DDF.KmeanCenter(temp_array,NoCenters_above_thresh,D,length,tau);
+                # Centers_above_thresh = DDF.KmeanCenter(temp_array,NoCenters_above_thresh,D,length,tau);
                 # Center = np.concatenate((Centers_k_means,Centers_above_thresh),axis=0)
                 Center = Centers_k_means
 
                 print("C_km:"+str(Centers_k_means.shape))
 
                 print("temp_arry:"+str(temp_array))
-                print("C_at:"+str(Centers_above_thresh.shape))
+                # print("C_at:"+str(Centers_above_thresh.shape))
 
                 NoCenters = np.shape(Center)[0]
                 print(NoCenters)
@@ -352,10 +244,9 @@ for neuron_directory_index in range(len(directories_list)):
 
                 stim_train = Current_train
                 Pdata = Voltage_test
-                beta_arr,R_arr = [1e-3,1e-2,1e-1,1e0,1e1,1e2],[1e-3,1e-2,1e-1,1e0,1e1,1e2]#[10e-9,10e-8,10e-7,10e-6,10e-5,10e-4,10e-3,10e-2,10e-1],[10e-6,10e-5,10e-4,10e-3,10e-2,10e-1,10e0,10e1,10e2,10e3,10e4]#[10e4,10e3,10e2,10e1]#[10e-5,10e-4,10e-3]#[10e-9,10e-8,10e-7,10e-6,10e-5,10e-4,10e-3,10e-2,10e-1]#[10e-4,10e-3,10e-2,10e-1,10e0,10e1,10e2],[10e-4,10e-3,10e-2,10e-1,10e0,10e1,10e2]#,[10e-3,10e-2,10e-1,10e0,10e1,10e2,10e3]
+                beta_arr,R_arr = [1e-3,1e-2,1e-1,1e0,1e1,1e2],[1e-3,1e-2,1e-1,1e0,1e1,1e2]
                 bias = 50 # should be larger than tau*(D-1) or something like that
                 X = np.arange(bias,bias+PreLength*TT,TT)
-                stim_test = Current_test
                 time_preparing_to_run_beta_r = time.time()
                 print("Time to reach right before beta_r loop: "+str(time_preparing_to_run_beta_r-time_start))
 
@@ -372,7 +263,7 @@ for neuron_directory_index in range(len(directories_list)):
                         time_beta_r_trained = time.time()
                         print("Time to run one beta-r  training: " + str(time_beta_r_trained - time_beta_r_start))
                         time_beta_r_start_prediction = time.time()
-                        PredValidation = DDF.PredictIntoTheFuture(F,PreLength,stim_test[bias-1:],Pdata[bias-1-(D-1)*tau:])
+                        PredValidation = DDF.PredictIntoTheFuture(F,PreLength,Current_test[bias-1:],Pdata[bias-1-(D-1)*tau:])
                         time_beta_r_end_prediction =  time.time()
                         print("Time to run one beta-r  prediction: " + str(time_beta_r_end_prediction - time_beta_r_start_prediction))
 
@@ -425,38 +316,33 @@ for neuron_directory_index in range(len(directories_list)):
 
 
                         # Coefficient Plotting
-                        plt.figure()
-                        plt.plot(np.sort(DDF.W))
-                        plt.title("RBF Coefficients (Sorted)")
-                        plt.xlabel('Index (Sorted)')
-                        plt.ylabel("RBF Coefficient Value")
-                        plt.savefig(directory_to_store_plots + title+"_RBF_Coefficients_(Sorted).png")
-                        np.savetxt(directory_to_store_txt_data + title + "_RBF_Coefficients_(Sorted).txt",
-                                   np.sort(DDF.W))
-                        plt.show()
-
-                        plt.figure()
-                        plt.plot(DDF.W)
-                        plt.title("RBF Coefficients (Unsorted)")
-                        plt.xlabel('Index (Unsorted)')
-                        plt.ylabel("RBF Coefficient Value")
-                        plt.savefig(directory_to_store_plots + title+"_RBF_Coefficients_(Unsorted).png")
-                        np.savetxt(directory_to_store_txt_data + title + "_RBF_Coefficients_(Unsorted).txt",
-                                   DDF.W)
-                        plt.show()
+                        plotting_utilities.plotting_quantity(x_arr=range(len(np.sort(DDF.W))), y_arr=np.sort(DDF.W), title="RBF Coefficients (Sorted)",
+                                                             xlabel='Index (Sorted)',
+                                                             ylabel="RBF Coefficient Value",
+                                                             save_and_or_display="save and display",
+                                                             save_location=directory_to_store_plots + title+"_RBF_Coefficients_(Sorted).png")
+                        save_utilities.save_text(data=np.sort(DDF.W),
+                                                 a_str=save_and_or_display,
+                                                 save_location=directory_to_store_txt_data + title + "_RBF_Coefficients_(Sorted).txt")
 
 
+                        plotting_utilities.plotting_quantity(x_arr=range(len(DDF.W)), y_arr=DDF.W, title="RBF Coefficients (Unsorted)",
+                                                             xlabel='Index (Unsorted)',
+                                                             ylabel="RBF Coefficient Value",
+                                                             save_and_or_display="save and display",
+                                                             save_location=directory_to_store_plots + title+"_RBF_Coefficients_(Unsorted).png")
+                        save_utilities.save_text(data=DDF.W,
+                                                 a_str=save_and_or_display,
+                                                 save_location=directory_to_store_txt_data + title + "_RBF_Coefficients_(Unsorted).txt")
 
-                        plt.figure()
-                        plt.plot(np.sort(Center[:, 0]))
-                        plt.title("Centers")
-                        plt.xlabel("Sorted centers index")
-                        plt.ylabel("Voltage")
-                        plt.savefig(directory_to_store_plots + title+"_Sorted_centers_vs_index.png")
-                        np.savetxt(directory_to_store_txt_data + title + "_Sorted_centers_vs_index.txt",
-                                   np.sort(Center[:, 0]))
-                        plt.show()
-
+                        plotting_utilities.plotting_quantity(x_arr=range(len(np.sort(Center[:, 0]))), y_arr=np.sort(Center[:, 0]), title="Centers",
+                                                             xlabel="Sorted centers index",
+                                                             ylabel="Voltage",
+                                                             save_and_or_display="save and display",
+                                                             save_location=directory_to_store_plots + title+"_Sorted_centers_vs_index.png")
+                        save_utilities.save_text(data=np.sort(Center[:, 0]),
+                                                 a_str=save_and_or_display,
+                                                 save_location=directory_to_store_txt_data + title + "_Sorted_centers_vs_index.txt")
 
 
                         plt.figure()
@@ -465,6 +351,7 @@ for neuron_directory_index in range(len(directories_list)):
                         plt.xlabel("Center voltage")
                         plt.ylabel("Weight (Coeff of RBF)")
                         plt.savefig(directory_to_store_plots + title+ "Weight(center_voltage).png")
-                        np.savetxt(directory_to_store_txt_data + title + "_Weight(center_voltage).txt",
-                                   np.column_stack((Center[:, 0], DDF.W[:-1])))
                         plt.show()
+                        save_utilities.save_text(data=np.column_stack((Center[:, 0], DDF.W[:-1])),
+                                                 a_str=save_and_or_display,
+                                                 save_location=directory_to_store_txt_data + title + "_Weight(center_voltage).txt")
