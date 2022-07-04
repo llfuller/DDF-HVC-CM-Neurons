@@ -71,10 +71,10 @@ def give_name_if_included_in_path(path_str, name_list):
     Returns whichever element of name_list is present in the path string
     """
     for a_name in name_list:
-        if a_name in name_list:
+        if a_name in path_str:
             return a_name
-    if a_name not in name_list:
-        return ""
+        else:
+            return ""
 
 def load_and_prepare_abf_or_mat_data(neuron_directory, a_filename, directory_to_store_txt_data, file_extension):
     """
