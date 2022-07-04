@@ -330,7 +330,8 @@ for a_path in full_paths_list:
                     plt.ylabel("Weight (Coeff of RBF)")
                     plt.savefig(directory_to_store_plots +"weights/"+ title+ "Weight(center_voltage).png")
                     plt.show()
-                    plt.close()
+                    if "display" not in save_and_or_display:
+                        plt.close("all")
                     save_utilities.save_text(data=np.column_stack((Center[:, 0], DDF.W[:-1])),
                                              a_str=save_and_or_display,
                                              save_location=directory_to_store_txt_data +"weights/"+ title + "_Weight(center_voltage).txt")

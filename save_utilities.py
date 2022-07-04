@@ -44,7 +44,7 @@ def save_and_or_display_plot(figure, a_str, save_location):
     if "save" in a_str.lower():
         save_fig_with_makedir(figure,save_location)
     if "display" not in a_str.lower():
-        plt.close()
+        plt.close(figure)
 
 def save_text(data, a_str, save_location):
     """
