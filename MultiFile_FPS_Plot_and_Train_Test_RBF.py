@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 import random
 import copy
 import glob
+from scipy.ndimage import gaussian_filter1d
 
 import numpy.fft
 import math
@@ -258,7 +259,8 @@ for a_path in full_paths_list:
                     time_beta_r_start = time.time()
                     title = str(neuron_name)+'_'+str(a_filename[:-4])+' with tstep='+str(TT)+' '+str(Time_units)+', D = '+str(D)+', Beta = '+str("{:.1e}".format(beta))+', R = '+str("{:.1e}".format(R))+' Train TSteps = '+str(length)+', Centers = '+str(NoCenters)+', tau = '+str(tau)
                     # print(R)
-                    print("Shape of Xdata is now "+str(Xdata.shape))
+                    # print("Shape of Xdata is now "+str(Xdata.shape))
+
                     F = DDF.FuncApproxF(Xdata,length,Center,beta,R,D,stim_train,tau)
                     time_beta_r_trained = time.time()
                     print("Time to run one beta-r  training: " + str(time_beta_r_trained - time_beta_r_start))
@@ -336,3 +338,43 @@ for a_path in full_paths_list:
                     save_utilities.save_text(data=np.column_stack((Center[:, 0], DDF.W[:-1])),
                                              a_str=save_and_or_display,
                                              save_location=directory_to_store_txt_data +"weights/"+ title + "_Weight(center_voltage).txt")
+
+                    # ========= Dawei Li's Convolution Spiking MSE Code ===============
+                    # simpling frequency: 50kHz, step size: 0.02ms
+                    # range of sigma_G
+                    sigma_list = np.array([20,50, 100, 150, 200, 300])
+                    cost_list = []
+                    for sigma_convolution in sigma_list:
+                        # sigma_convolution = 200
+                        predict_conv = gaussian_filter1d(Voltage_pred, sigma_convolution, truncate=2)
+                        true_conv = gaussian_filter1d(used_Voltage_test, sigma_convolution, truncate=2)
+                        fig = plt.figure()
+                        ax = fig.add_subplot(111)
+                        ax.plot(X, true_conv, label='True Voltage', color='black')
+                        ax.plot(X, predict_conv, 'r--', label='Prediction')
+                        ax.set_title("Convolved V(t) for Sigma="+str(sigma_convolution))
+                        ax.set_xlabel("Time ("+str(Time_units)+")")
+                        ax.set_ylabel("Convolved Voltage ("+str(Voltage_units)+")")
+                        # if "current" in title.lower():
+                        #     ax.get_lines()[0].set_color("orange")
+                        # if "voltage" in title.lower():
+                        #     ax.get_lines()[0].set_color("blue")
+                        plt.xlim((12.5,13.5))
+                        save_utilities.save_and_or_display_plot(fig, "save", directory_to_store_plots + "convolution_MSE_metric/" + title + "_Convolved_waveforms_sigma="+str(sigma_convolution)+".png")
+                        plt.close(fig)
+                        cost_list.append((np.sum((predict_conv - true_conv) ** 2)) / len(PredValidation))
+                    # convert the unit of sigma_G from step to ms
+                    sigma_range_in_ms = np.array(sigma_list) * TT
+
+                    fig2 = plt.figure()
+                    ax = fig2.add_subplot(111)
+                    ax.plot(sigma_range_in_ms, cost_list, linewidth=2)
+                    ax.set_title("Convolved V(t) for Sigma=" + str(sigma_convolution))
+                    ax.set_xlabel(r"$\sigma_G$("+str(Time_units)+")")
+                    ax.set_ylabel(r"cost value(mV$^2$)")
+                    if "current" in title.lower():
+                        ax.get_lines()[0].set_color("orange")
+                    if "voltage" in title.lower():
+                        ax.get_lines()[0].set_color("blue")
+                    save_utilities.save_and_or_display_plot(fig2, "save", directory_to_store_plots +"convolution_MSE_metric/"+ title+"_MSE_metric_vs_sigma.png")
+                    plt.close(fig2)
