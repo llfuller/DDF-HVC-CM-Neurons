@@ -35,7 +35,7 @@ tau_arr = np.array(range(2, 10)) # math notation: range(2,10) = all integers in 
 D_arr = np.array(range(2, 10)) # math notation: range(2,10) = all integers in bounds [2,9)
 beta_arr = np.array(np.power(10.0,range(-3,3))) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
 R_arr = np.array(np.power(10.0,range(-3,3))) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
-file_extension = "mat" # string; examples: "atf" or "txt" (case sensitive); don't include period; lowercase
+file_extension = "txt" # string; examples: "atf" or "txt" (case sensitive); don't include period; lowercase
 
 # specify what the neuron names are in the file titles here:
 neuron_name_list = ['32425a75',
@@ -43,24 +43,28 @@ neuron_name_list = ['32425a75',
 Current_units = "pA"
 Voltage_units = "mV"
 Time_units = "ms"
+TT = 0.02 # delta t in Time_units units, time between samples if not specified through loaded files
 
 # Data directory to recursively load data from:
-root_directory = "HVC_biocm_data/simulations/" # example: "HVC_biocm_data/simulations/" ; Include the final "/"
+root_directory = "Data2022-50KhZ/" # example: "HVC_biocm_data/simulations/" ; Include the final "/"
+
 # Use only this file:
-files_to_evaluate = ["biocm_phasic_lzo_1_1_10_100_200.mat"] # leave this list empty if you want to evaluate all files in root_directory recursively
+files_to_evaluate = []#"biocm_phasic_lzo_1_1_10_100_200.mat"] # leave this list empty if you want to evaluate all files in root_directory recursively
 
-# In[3]:
-
-# ======== do not modify below ==========
-full_paths_list = glob.glob(root_directory+"*."+str(save_utilities.glob_extension_case_string_builder(file_extension)),
-                            recursive=True)
-print(full_paths_list)
-neuron_name = "" # leave as "" if no neuron name is found
-# Files to ignore within directory:
 do_not_use_list = ["2014_09_10_0001.abf",
                    "2014_09_10_0002.abf",
                    "2014_09_10_0003.abf"# file attached to Meliza's data when I received it said not to use these. The input signals are not suitable for training
                    ] # bad data for RBF training
+
+# In[3]:
+
+# ======== do not modify below ==========
+print("Extensions searched: "+str(save_utilities.glob_extension_case_string_builder(file_extension)))
+full_paths_list = glob.glob(root_directory+"**/*."+str(save_utilities.glob_extension_case_string_builder(file_extension)),
+                            recursive=True)
+print("Full paths list:"+str(full_paths_list))
+neuron_name = "" # leave as "" if no neuron name is found
+# Files to ignore within directory:
 
 extensions_with_included_unit_data = ["abf","mat"]
 
@@ -70,7 +74,6 @@ for i, path in enumerate(full_paths_list):
 
 # In[4]:
 
-print("Full paths list:"+str(full_paths_list))
 for a_path in full_paths_list:
     if file_extension.lower() == "txt":
         if "voltage" in a_path.lower(): # skip files if 'voltage' in filename. Only need to perform rest of this loop when 'current' in filename, to avoid duplicating work.
@@ -86,7 +89,7 @@ for a_path in full_paths_list:
     print("================================New File ==================================================")
     if a_filename in do_not_use_list:
         continue # skip this iteration if the filename is on the do_not_use_list
-    if file_extension.lower() in extensions_with_included_unit_data:
+    if file_extension.lower() in extensions_with_included_unit_data: # primarily .abf and .mat files
         print("File may have included units which will override units specified by user at top of this code.")
         units_list = save_utilities.load_and_prepare_abf_or_mat_data(directory_to_read_input_data, a_filename,
                                                         directory_to_store_txt_data, file_extension)
@@ -96,13 +99,18 @@ for a_path in full_paths_list:
         loaded_V = imported_data[:, 0]
         loaded_I = imported_data[:, 1]
         loaded_t = imported_data[:, 2]
-    else:
-        if 'current' in a_path:
-            voltage_filepath = a_path.replace('current','voltage')
-        if 'Current' in a_path:
-            voltage_filepath = a_path.replace('Current','Voltage')
-        loaded_V = np.loadtxt(voltage_filepath)
-        loaded_I = np.loadtxt(a_path)
+    else: # primarily .txt files
+        if root_directory=="Data2022-50KhZ/":
+            loaded_IV = np.loadtxt(a_path)
+            loaded_I = loaded_IV[:, 0]
+            loaded_V = loaded_IV[:, 1]
+        else:
+            if 'current' in a_path:
+                voltage_filepath = a_path.replace('current','voltage')
+            if 'Current' in a_path:
+                voltage_filepath = a_path.replace('Current','Voltage')
+            loaded_V = np.loadtxt(voltage_filepath)
+            loaded_I = np.loadtxt(a_path)
         loaded_t = TT*np.array(range(len(loaded_V)))
 
     total_num_timesteps_in_data = len(loaded_V)
