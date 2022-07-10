@@ -191,53 +191,53 @@ for lmn in range(1, 5):
                     title = neuron_name_list[use_neuron_index]+' with 0.02 time step, D = '+str(D)+', Beta = '+str("{:.1e}".format(beta))+', R = '+str("{:.1e}".format(R))+' Train Time = '+str(length)+', Centers = '+str(NoCenters)+', tau = '+str(tau)+', lpf tau ='+str(fc_tau)+'cutoff frequency ='+str(1 / (2 * np.pi * fc_tau))+', transition band ='+str(b)
                     print(R)
                     F = DDF.FuncApproxF(Xdata,length,Center,beta,R,D,stim_train,tau)
-                    #try:
-                    PredValidation = DDF.PredictIntoTheFuture(F,PreLength,stim_test[bias-1:],Pdata[bias-1-(D-1)*tau:])
-                    # Tau8
-                    plt.figure(figsize=(20,10))
-                    plt.plot(X,Pdata[bias:bias + PreLength],label = 'True Voltage', color = 'black')
-                    plt.plot(X,PredValidation[tau*(D-1)+1:tau*(D-1)+PreLength+1],label = 'Prediction', color = 'r')
-                    plt.xlabel('time (ms)',fontsize=20)
-                    plt.ylabel('Voltage',fontsize=20)
-                    plt.legend()
-                    plt.title(title,fontsize=20)
-                    #plt.savefig('Validation Prediction Result')
-                    plt.savefig("Output/"+title+'.png')
-                    # plt.show
-                    plt.close()
+                    try:
+                        PredValidation = DDF.PredictIntoTheFuture(F,PreLength,stim_test[bias-1:],Pdata[bias-1-(D-1)*tau:])
+                        # Tau8
+                        plt.figure(figsize=(20,10))
+                        plt.plot(X,Pdata[bias:bias + PreLength],label = 'True Voltage', color = 'black')
+                        plt.plot(X,PredValidation[tau*(D-1)+1:tau*(D-1)+PreLength+1],label = 'Prediction', color = 'r')
+                        plt.xlabel('time (ms)',fontsize=20)
+                        plt.ylabel('Voltage',fontsize=20)
+                        plt.legend()
+                        plt.title(title,fontsize=20)
+                        #plt.savefig('Validation Prediction Result')
+                        plt.savefig("Output/"+title+'.png')
+                        # plt.show
+                        plt.close()
 
-                    '''
-                    plt.plot(Voltage_train[:100000])
-                    plt.plot(Pdata[0:180000])
-                    plt.show()
-                    plt.figure()
-                    plt.plot(np.sort(DDF.W))
-                    plt.title("RBF Coefficients (Sorted)")
-                    plt.xlabel('Index (Sorted)')
-                    plt.ylabel("RBF Coefficient Value")
-                    plt.savefig("Output/"+title+'RBF Coefficients (Sorted).png')
-                    plt.show()
-                    
-                    plt.figure()
-                    plt.plot(np.sort(Center[:, 0]))
-                    plt.title("Centers")
-                    plt.xlabel("Sorted centers index")
-                    plt.ylabel("Voltage")
-                    plt.savefig("Output/"+title+'Centers.png')
-                    plt.show()
-                    
-            
-            
-                    plt.scatter(Center[:, 0], DDF.W[:-1])
-                    plt.title("Weight as a function of center voltage (unsure)")
-                    plt.xlabel("Center voltage")
-                    plt.ylabel("Weight (Coeff of RBF)")
-                    plt.savefig("Output/"+title+'WeightsVSCenterVoltage.png')
-                    plt.show()
-                    '''
-                    '''
+                        '''
+                        plt.plot(Voltage_train[:100000])
+                        plt.plot(Pdata[0:180000])
+                        plt.show()
+                        plt.figure()
+                        plt.plot(np.sort(DDF.W))
+                        plt.title("RBF Coefficients (Sorted)")
+                        plt.xlabel('Index (Sorted)')
+                        plt.ylabel("RBF Coefficient Value")
+                        plt.savefig("Output/"+title+'RBF Coefficients (Sorted).png')
+                        plt.show()
+                        
+                        plt.figure()
+                        plt.plot(np.sort(Center[:, 0]))
+                        plt.title("Centers")
+                        plt.xlabel("Sorted centers index")
+                        plt.ylabel("Voltage")
+                        plt.savefig("Output/"+title+'Centers.png')
+                        plt.show()
+                        
+                
+                
+                        plt.scatter(Center[:, 0], DDF.W[:-1])
+                        plt.title("Weight as a function of center voltage (unsure)")
+                        plt.xlabel("Center voltage")
+                        plt.ylabel("Weight (Coeff of RBF)")
+                        plt.savefig("Output/"+title+'WeightsVSCenterVoltage.png')
+                        plt.show()
+                        '''
+
                     except:
                         print("PredValidation Error\n")
-                    '''
+
 
 
