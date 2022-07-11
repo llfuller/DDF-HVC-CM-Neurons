@@ -61,7 +61,7 @@ for lmn in range(1, 5):
 
             h_final = 0
 
-            for h in range(len(loaded_I_1)):
+            for h in range(len(Current_lpf[1])):
                 if Current_lpf[1][h] > 0 and fc_tau <= 2 * np.pi / Current_lpf[1][h]:
                     fc = h * 0.001
                     h_final = h
