@@ -31,10 +31,10 @@ np.random.seed(2022)
 save_and_or_display = "save"
 
 # epoch = None # also called "episode". set to None if not specified
-tau_arr = np.array(range(2, 10)) # math notation: range(2,10) = all integers in bounds [2,9)
-D_arr = np.array(range(2, 10)) # math notation: range(2,10) = all integers in bounds [2,9)
-beta_arr = np.array(np.power(10.0,range(-3,3))) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
-R_arr = np.array(np.power(10.0,range(-3,3))) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+tau_arr = np.array([10,15,20])#np.array(range(10, 20)) # math notation: range(2,10) = all integers in bounds [2,9)
+D_arr = np.array([10,15,20])#np.array(range(2, 10)) # math notation: range(2,10) = all integers in bounds [2,9)
+beta_arr = np.array(np.power(10.0,[-2]))#np.array(np.power(10.0,range(-3,3))) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+R_arr = np.array(np.power(10.0,[-2])) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
 file_extension = "txt" # string; examples: "atf" or "txt" (case sensitive); don't include period; lowercase
 
 # specify what the neuron names are in the file titles here:
@@ -56,13 +56,16 @@ do_not_use_list = ["2014_09_10_0001.abf",
                    "2014_09_10_0003.abf"# file attached to Meliza's data when I received it said not to use these. The input signals are not suitable for training
                    ] # bad data for RBF training
 
+FPS_xlim= (0,0.175)
+
+fraction_of_data_for_training = 4.0/6.0
+
 # In[3]:
 
 # ======== do not modify below ==========
 print("Extensions searched: "+str(save_utilities.glob_extension_case_string_builder(file_extension)))
 full_paths_list = glob.glob(root_directory+"**/*."+str(save_utilities.glob_extension_case_string_builder(file_extension)),
                             recursive=True)
-print("Full paths list:"+str(full_paths_list))
 neuron_name = "" # leave as "" if no neuron name is found
 # Files to ignore within directory:
 
@@ -72,15 +75,21 @@ extensions_with_included_unit_data = ["abf","mat"]
 for i, path in enumerate(full_paths_list):
     full_paths_list[i] = path.replace("\\","/")
 
+print("Full paths list:"+str(full_paths_list))
+
 # In[4]:
 
 for a_path in full_paths_list:
     if file_extension.lower() == "txt":
         if "voltage" in a_path.lower(): # skip files if 'voltage' in filename. Only need to perform rest of this loop when 'current' in filename, to avoid duplicating work.
             continue
+    # if "epoch_5" not in a_path:
+    #     continue
+    # if "Neuron 2" not in a_path:
+    #     continue
     last_slash_location = a_path.rfind("/")
     a_filename = a_path[last_slash_location+1:]
-    if len(files_to_evaluate)==0 and a_filename not in files_to_evaluate:
+    if len(files_to_evaluate)>0 and a_filename not in files_to_evaluate:
         continue
     directory_to_read_input_data = a_path[:last_slash_location+1] # should include the last slash, but nothing past it
     directory_to_store_plots = "plots/" + directory_to_read_input_data + str(a_filename[:-4]) + "/"
@@ -114,7 +123,7 @@ for a_path in full_paths_list:
         loaded_t = TT*np.array(range(len(loaded_V)))
 
     total_num_timesteps_in_data = len(loaded_V)
-    train_timestep_end = round(total_num_timesteps_in_data*5.0/6.0)
+    train_timestep_end = round(total_num_timesteps_in_data*fraction_of_data_for_training) #4/6 for neuron 2 epoch 5, and 5/6 for everything else
     Voltage_train = loaded_V[:train_timestep_end]
     Current_train = loaded_I[:train_timestep_end]
     Time_train    = loaded_t[:train_timestep_end]
@@ -138,7 +147,6 @@ for a_path in full_paths_list:
     freq_without_0_index = freq_array[1:]
     power_spectrum = FPS_list[0]
     normalized_power_spec_without_0_index = power_spectrum[1:] / np.max(np.abs(power_spectrum[1:]))
-
     #--------------- Current FPS Plots --------------
     # Training Current with no modifications
     fig = plotting_utilities.plotting_quantity(x_arr = freq_array, y_arr = power_spectrum/np.max(np.abs(power_spectrum)),
@@ -154,7 +162,7 @@ for a_path in full_paths_list:
 
 
     # Training Current - No index 0, Normalized, many windows
-    for window_size in [5, 75, 150, 300]:
+    for window_size in [0.175]:#5, 75, 150, 300]:
         final_index = int(round(float(window_size) / delta_freq))
         fig = plotting_utilities.plotting_quantity(x_arr = freq_without_0_index, y_arr = normalized_power_spec_without_0_index,
                                                    title = "Power(freq) of current_train (Neuron "+str(neuron_name)+'_'+str(a_filename[:-4])+")",
@@ -188,7 +196,7 @@ for a_path in full_paths_list:
 
 
     # Training Current - No index 0, Normalized, many windows
-    for window_size in [5, 75, 150, 300]:
+    for window_size in [0.175]:#5, 75, 150, 300]:
         final_index = int(round(float(window_size) / delta_freq))
         fig = plotting_utilities.plotting_quantity(x_arr = freq_without_0_index, y_arr = normalized_power_spec_without_0_index,
                                                    title = "Power(freq) of voltage_train (Neuron "+str(neuron_name)+'_'+str(a_filename[:-4])+")",
@@ -220,8 +228,11 @@ for a_path in full_paths_list:
                                          xlabel = "Time ("+str(Time_units)+")", ylabel = "Voltage ("+str(Voltage_units)+")",
                                          save_and_or_display=save_and_or_display,
                                          save_location=directory_to_store_plots+"I_V_training_and_testing/"+"Train 1 first half Test 1 second half"+" Test Voltage.png")
+
+
     # In[6]:
     # =============================== Training and Prediction  =====================================
+    print("Beginning Training and prediction for "+str(a_path))
     for tau in tau_arr:
         for D in D_arr:
             print("========================New tau and D combination ==================")
@@ -252,7 +263,7 @@ for a_path in full_paths_list:
 
             stim_train = Current_train
             Pdata = Voltage_test
-            bias = 50 # should be larger than tau*(D-1) or something like that
+            bias = tau*(D-1)+1#50 # should be larger than tau*(D-1) or something like that
             # X = np.arange(bias,bias+PreLength*TT,TT)
             X = Time_test[bias:bias+PreLength]#bias -1 maybe?
 
