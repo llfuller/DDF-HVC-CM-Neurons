@@ -256,8 +256,8 @@ for a_path in full_paths_list:
             NoCenters = np.shape(Center)[0]
             print(NoCenters)
             print("Centers:"+str(Center.shape))
-            np.savetxt('centers/Center '+str(neuron_name)+'_'+str(a_filename[:-4])+'(D,NumCenters)='+str((D,NoCenters))+'.txt',Center)
-            Center = np.loadtxt('centers/Center '+str(neuron_name)+'_'+str(a_filename[:-4])+'(D,NumCenters)='+str((D,NoCenters))+'.txt')
+            np.savetxt('centers/Center '+str(neuron_name)+'_'+str(a_filename[:-4])+'(D,tau,NumCenters)='+str((D,tau,NoCenters))+'.txt',Center)
+            Center = np.loadtxt('centers/Center '+str(neuron_name)+'_'+str(a_filename[:-4])+'(D,tau,NumCenters)='+str((D,tau,NoCenters))+'.txt')
 
 
 
@@ -313,6 +313,20 @@ for a_path in full_paths_list:
                     Voltage_pred =  PredValidation[tau*(D-1)+1:tau*(D-1)+PreLength+1]
 
                     # In[8]:
+
+                    # Prediction and Truth Plotting
+                    save_utilities.save_text(data=Pdata[bias:bias + PreLength],
+                                             a_str=save_and_or_display,
+                                             save_location=directory_to_store_txt_data + "prediction_and_truth/" + title + "_voltage_truth.txt")
+                    save_utilities.save_text(data=Voltage_pred,
+                                             a_str=save_and_or_display,
+                                             save_location=directory_to_store_txt_data + "prediction_and_truth/" + title + "_voltage_prediction.txt")
+                    save_utilities.save_text(data=X,
+                                             a_str=save_and_or_display,
+                                             save_location=directory_to_store_txt_data + "prediction_and_truth/" + title + "_time.txt")
+
+
+
 
                     # Coefficient Plotting
                     plotting_utilities.plotting_quantity(x_arr=range(len(np.sort(DDF.W))), y_arr=np.sort(DDF.W), title="RBF Coefficients (Sorted)",
