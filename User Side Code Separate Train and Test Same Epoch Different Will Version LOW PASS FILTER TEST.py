@@ -57,15 +57,17 @@ for lmn in range(1, 5):
             fc_tau = ijk
             print("lpf tau = "+str(fc_tau)+"\n")
 
-            Current_lpf = calc_Fourier_power_spectrum(np.array([loaded_I_1, loaded_V_1]), np.array([[i * (1/50000)] for i in range(len(loaded_I_1))]))
+            FPS_Function_Output_List = calc_Fourier_power_spectrum(np.array([loaded_I_1, loaded_V_1]), np.array([[i * (1 / 50000)] for i in range(len(loaded_I_1))]))
 
             h_final = 0
 
-            for h in range(len(Current_lpf[1])):
-                if Current_lpf[1][h] > 0 and fc_tau <= 2 * np.pi / Current_lpf[1][h]:
-                    fc = h * 0.001
+            frequency_list = FPS_Function_Output_List[1]
+
+            for h in range(len(frequency_list)):
+                if frequency_list[h] > 0 and fc_tau >= 1.0/(2.0 * np.pi * frequency_list[h]):
+                    fc = frequency_list[h] / frequency_list[len(frequency_list)]
                     h_final = h
-                    print("lpf cutoff frequency = "+str(Current_lpf[1][h])+"Hz, at entry number "+str(h)+" with a tau of "+str(2 * np.pi / Current_lpf[1][h])+"\n")
+                    print("lpf cutoff frequency = " + str(frequency_list[h]) + "Hz, at entry number " + str(h) + " with a tau of " + str(1 / (2 * np.pi * frequency_list[h])) + "\n")
                     break
 
             b = lmn * 0.001 #transition band
