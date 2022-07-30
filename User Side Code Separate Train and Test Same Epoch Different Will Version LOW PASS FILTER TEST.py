@@ -65,7 +65,7 @@ for lmn in range(1, 5):
 
             for h in range(len(frequency_list)):
                 if frequency_list[h] > 0 and fc_tau >= 1.0/(2.0 * np.pi * frequency_list[h]):
-                    fc = frequency_list[h] / frequency_list[len(frequency_list)]
+                    fc = frequency_list[h] / frequency_list[len(frequency_list) - 1]
                     h_final = h
                     print("lpf cutoff frequency = " + str(frequency_list[h]) + "Hz, at entry number " + str(h) + " with a tau of " + str(1 / (2 * np.pi * frequency_list[h])) + "\n")
                     break
