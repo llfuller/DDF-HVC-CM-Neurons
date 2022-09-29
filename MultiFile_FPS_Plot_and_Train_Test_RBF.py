@@ -31,8 +31,13 @@ np.random.seed(2022)
 save_and_or_display = "save"
 
 # epoch = None # also called "episode". set to None if not specified
+<<<<<<< Updated upstream
 tau_arr = np.array([10,15,20])#np.array(range(10, 20)) # math notation: range(2,10) = all integers in bounds [2,9)
 D_arr = np.array([6,15,20])#np.array(range(2, 10)) # math notation: range(2,10) = all integers in bounds [2,9)
+=======
+tau_arr = np.array([20,30,40])#np.array(range(10, 20)) # math notation: range(2,10) = all integers in bounds [2,9)
+D_arr = np.array([5,7,9])#np.array(range(2, 10)) # math notation: range(2,10) = all integers in bounds [2,9)
+>>>>>>> Stashed changes
 beta_arr = np.array(np.power(10.0,[-6,-5,-4,-3]))#np.array(np.power(10.0,range(-3,3))) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
 R_arr = np.array(np.power(10.0,[-6,-5,-4,-3])) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
 file_extension = "txt" # string; examples: "atf" or "txt" (case sensitive); don't include period; lowercase
