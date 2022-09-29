@@ -32,9 +32,9 @@ save_and_or_display = "save"
 
 # epoch = None # also called "episode". set to None if not specified
 tau_arr = np.array([10,15,20])#np.array(range(10, 20)) # math notation: range(2,10) = all integers in bounds [2,9)
-D_arr = np.array([10,15,20])#np.array(range(2, 10)) # math notation: range(2,10) = all integers in bounds [2,9)
-beta_arr = np.array(np.power(10.0,[-2]))#np.array(np.power(10.0,range(-3,3))) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
-R_arr = np.array(np.power(10.0,[-2])) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+D_arr = np.array([6,15,20])#np.array(range(2, 10)) # math notation: range(2,10) = all integers in bounds [2,9)
+beta_arr = np.array(np.power(10.0,[-6,-5,-4,-3]))#np.array(np.power(10.0,range(-3,3))) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+R_arr = np.array(np.power(10.0,[-6,-5,-4,-3])) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
 file_extension = "txt" # string; examples: "atf" or "txt" (case sensitive); don't include period; lowercase
 
 # specify what the neuron names are in the file titles here:
@@ -235,6 +235,9 @@ for a_path in full_paths_list:
     print("Beginning Training and prediction for "+str(a_path))
     for tau in tau_arr:
         for D in D_arr:
+            random.seed(2022)
+            np.random.seed(2022)
+
             print("========================New tau and D combination ==================")
             # if tau != tau_specified or D!= D_specified:
             #     continue  # want to try predicting only this neuron since it's complex and most interesting

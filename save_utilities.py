@@ -31,8 +31,11 @@ def save_txt_with_makedir(data, save_location):
     directory = save_location[:last_slash_index]
     filename  = save_location[last_slash_index:]
     if not os.path.isdir(directory):
+        print("Creating "+str(directory))
         os.makedirs(directory)
     if os.path.isdir(directory):
+        print("Saving to "+str(directory))
+        print("Saving: "+str(directory + str(filename)))
         np.savetxt(directory + str(filename), data)
 
 
