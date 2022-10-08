@@ -115,12 +115,16 @@ for a_path in full_paths_list:
             loaded_V = loaded_IV[:, 1]
         else:
             if 'current' in a_path:
-                voltage_filepath = a_path.replace('current','voltage')
+                voltage_filepath = a_path.replace('current', 'voltage')
+                current_filepath = copy.deepcopy(a_path)
+                a_path.replace('current', '')
             if 'Current' in a_path:
-                voltage_filepath = a_path.replace('Current','Voltage')
+                voltage_filepath = a_path.replace('Current', 'Voltage')
+                current_filepath = copy.deepcopy(a_path)
+                a_path.replace('Current', '')
             loaded_V = np.loadtxt(voltage_filepath)
-            loaded_I = np.loadtxt(a_path)
-        loaded_t = TT*np.array(range(len(loaded_V)))
+            loaded_I = np.loadtxt(current_filepath)
+        loaded_t = TT * np.array(range(len(loaded_V)))
 
     total_num_timesteps_in_data = len(loaded_V)
     train_timestep_end = round(total_num_timesteps_in_data*fraction_of_data_for_training) #4/6 for neuron 2 epoch 5, and 5/6 for everything else
