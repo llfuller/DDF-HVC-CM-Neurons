@@ -27,7 +27,7 @@ class Gauss:
         #Here we generate the time delayed data
         for d in range(D):
             XTau[D-1-d] = Xdata[tau*d:length+tau*d]
-        centers = KMeans(n_clusters=P, random_state=0).fit(XTau.T).cluster_centers_
+        centers = KMeans(n_clusters=P).fit(XTau.T).cluster_centers_
         return centers
     
     """
