@@ -173,3 +173,4 @@ cython_debug/
 *.atf
 *.zip
 *.mat
+*.7z
