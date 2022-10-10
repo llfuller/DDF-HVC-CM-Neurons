@@ -37,16 +37,16 @@ save_and_or_display = "save"
 # R_arr = np.array(np.power(10.0,[-6,-5,-4,-3])) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
 
 tau_arr = np.array(
-    [20]
+    [2, 5, 10, 15, 20]
 )  # np.array(range(10, 20)) # math notation: range(2,10) = all integers in bounds [2,9)
 D_arr = np.array(
-    [5]
+    [2, 5, 8, 10, 15, 20]
 )  # np.array(range(2, 10)) # math notation: range(2,10) = all integers in bounds [2,9)
 beta_arr = np.array(
-    np.power(10.0, [-6])
+    np.power(10.0, [-6, -3, 0, 3, 6])
 )  # np.array(np.power(10.0,range(-3,3))) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
 R_arr = np.array(
-    np.power(10.0, [-6])
+    np.power(10.0, [-6, -3, 0, 3, 6])
 )  # range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
 
 file_extension = "txt"  # string; examples: "atf" or "txt" (case sensitive); don't include period; lowercase
