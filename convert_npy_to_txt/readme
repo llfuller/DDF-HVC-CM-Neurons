@@ -1,0 +1,13 @@
+Instructions for reconstructing Figures 3 and 5 given the files in this folder
+
+The sigma_#_arr.txt arrays have dimension (num_R, num_trials). num_R = 21, and num_trials = 30.
+The scalar value at (i, j) or (row, col) in the array is the log10(MSE_between_convolved_prediction_and_convolved_truth).
+That MSE value should be the y-axis value when plotting.
+
+Each index of i in the sigma_#_arr.txt files corresponds to the same index of i in log10(R_values).txt.
+The values of log10(R), found in log10(R_values).txt, should be the x-axis value. There are 21 numbers along the x-axis.
+
+Pseudocode to reconstruct Figures 3 and 5 in paper draft:
+for each j in range(0,30):
+    For each i in range(0,21):
+        plot(x=loaded_log10_R[i], y=loaded_log10(MSE_between_conv......)[i][j])
