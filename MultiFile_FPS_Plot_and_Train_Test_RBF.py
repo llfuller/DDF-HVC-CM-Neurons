@@ -86,16 +86,23 @@ save_and_or_display = "save"
 # R_arr = np.array(np.power(10.0,[-6,-5.75,-5.5,-5.25,-5,-4.75,-4.5,-4.25,-4,-3.75,-3.5,-3.25,-3,-2.75,-2.5,-2.25,-2,-1.75,-1.5,-1.25,-1])) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
 # file_extension = "txt" # string; examples: "atf" or "txt" (case sensitive); don't include period; lowercase
 
-# Testing MSE convolutional sigma with hyperparams that worked for L63 t-dilation=0.2-driven Lilac 242 Neuron 1 (Epoch 2).
+# Testing MSE convolutional sigma with hyperparams that worked for L63 t-dilation=?-driven Lilac 242 Neuron 1 (Epoch 2).
 # tau_arr = np.array([10])#np.array(range(10, 20)) # math notation: range(2,10) = all integers in bounds [2,9)
 # D_arr = np.array([15])#np.array(range(2, 10)) # math notation: range(2,10) = all integers in bounds [2,9)
 # beta_arr = np.array(np.power(10.0,[-3]))#np.array(np.power(10.0,range(-3,3))) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
 # R_arr = np.array(np.power(10.0,[-6,-5.75,-5.5,-5.25,-5,-4.75,-4.5,-4.25,-4,-3.75,-3.5,-3.25,-3,-2.75,-2.5,-2.25,-2,-1.75,-1.5,-1.25,-1])) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
 # file_extension = "txt" # string; examples: "atf" or "txt" (case sensitive); don't include period; lowercase
 
-# Testing MSE convolutional sigma with hyperparams that worked for L63 t-dilation=0.2-driven Lilac 242 Neuron 1 (Epoch 5).
-tau_arr = np.array([10])#np.array(range(10, 20)) # math notation: range(2,10) = all integers in bounds [2,9)
-D_arr = np.array([10])#np.array(range(2, 10)) # math notation: range(2,10) = all integers in bounds [2,9)
+# Testing MSE convolutional sigma with hyperparams that worked for L63 t-dilation=0.5-driven Lilac 242 Neuron 1 (Epoch 5).
+# tau_arr = np.array([10])#np.array(range(10, 20)) # math notation: range(2,10) = all integers in bounds [2,9)
+# D_arr = np.array([10])#np.array(range(2, 10)) # math notation: range(2,10) = all integers in bounds [2,9)
+# beta_arr = np.array(np.power(10.0,[-3]))#np.array(np.power(10.0,range(-3,3))) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+# R_arr = np.array(np.power(10.0,[-6,-5.75,-5.5,-5.25,-5,-4.75,-4.5,-4.25,-4,-3.75,-3.5,-3.25,-3,-2.75,-2.5,-2.25,-2,-1.75,-1.5,-1.25,-1])) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+# file_extension = "txt" # string; examples: "atf" or "txt" (case sensitive); don't include period; lowercase
+
+# Testing MSE convolutional sigma with hyperparams that worked for L63 t-dilation=0.2-driven Lilac 242 Neuron 1 (Epoch 9).
+tau_arr = np.array([15])#np.array(range(10, 20)) # math notation: range(2,10) = all integers in bounds [2,9)
+D_arr = np.array([15])#np.array(range(2, 10)) # math notation: range(2,10) = all integers in bounds [2,9)
 beta_arr = np.array(np.power(10.0,[-3]))#np.array(np.power(10.0,range(-3,3))) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
 R_arr = np.array(np.power(10.0,[-6,-5.75,-5.5,-5.25,-5,-4.75,-4.5,-4.25,-4,-3.75,-3.5,-3.25,-3,-2.75,-2.5,-2.25,-2,-1.75,-1.5,-1.25,-1])) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
 file_extension = "txt" # string; examples: "atf" or "txt" (case sensitive); don't include period; lowercase
@@ -113,7 +120,7 @@ TT = 0.02 # delta t in Time_units units, time between samples if not specified t
 root_directory = "Data2022-50KhZ/7-7-2022/Lilac 242/Neuron 1/"#"biocm_simulations/"#"cm_ddf/data/"#"Data2022-50KhZ/" # example: "HVC_biocm_data/simulations/" ; Include the final "/"
 
 # Use only this file:
-files_to_evaluate = ["epoch_5.txt"]#"biocm_phasic_lzo_1_1_10_100_200.mat"] # leave this list empty if you want to evaluate all files in root_directory recursively
+files_to_evaluate = ["epoch_9.txt"]#"biocm_phasic_lzo_1_1_10_100_200.mat"] # leave this list empty if you want to evaluate all files in root_directory recursively
 
 do_not_use_list = ["2014_09_10_0001.abf",
                    "2014_09_10_0002.abf",
