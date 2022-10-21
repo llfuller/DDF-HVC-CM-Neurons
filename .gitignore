@@ -174,3 +174,4 @@ cython_debug/
 *.zip
 *.mat
 *.json
+*.npy
