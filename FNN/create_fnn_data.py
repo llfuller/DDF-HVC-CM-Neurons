@@ -9,7 +9,11 @@ from tqdm import tqdm
 import time
 import torch
 
-def generate_min_dist_datapoints(data, device, window=1000, get_data=False):
+def generate_min_dist_datapoints(data, device, window=100000, get_data=False):
+    # fix window size if it is too big
+    if window > len(data):
+        window = len(data)-1
+
     result_data, result_index = torch.zeros((data.shape[0], 2, data.shape[1]), device=device), torch.zeros((data.shape[0], 2), device=device)
     for i in tqdm(range(len(data))):
 
@@ -56,6 +60,11 @@ def generate_min_dist_datapoints(data, device, window=1000, get_data=False):
         return result_data, result_index
 
 """Here starts the actual executable script"""
+
+"""
+Specify file source, tau, R, D values before running the script
+"""
+
 # get target data (Lilac 114, Neuron 1, epoch_1.txt)
 # Column1: Current, Column2: Voltage
 try:
@@ -67,41 +76,23 @@ lilac_114_1_1.columns = ['Time', 'Current', 'Voltage']
 lilac_114_1_1.head()
 
 # define tau (user provided), distance ratio threshold R (user defined hyperparameter), and range of D to search over (trainable parameter)
-tau = 10
-R_ratio = 15 # TODO: tune and try new values of R threshold
+tau = 5
+R_ratio = 10 # TODO: Investigate optimal value of R; 10 is suggested by the original paper
 D_arr = np.array([1, 2, 4, 6, 8, 10, 12, 15, 18, 20])
-
-# TODO: change window to random sampling data from entire dataset, or start with every 1000th data points and move down on the skip size
-# plot code are in the branch "random center robustness" - "MultiFile_FPS_Plot_and_Train_Test_RBF.py" is different in that branch
-# TODO: save result as txt file; rows: D values, column: FNN ratio
 
 # create the time delay vectors for each data points with each of the D values
 original_data = lilac_114_1_1.to_numpy()
-T = original_data[:, 0]
-I = original_data[:, 1]
-V_0 = original_data[:, 2] # voltage at 0*tau
+T = original_data[:, 0].astype(np.int64)
+I = original_data[:, 1].astype(np.float64)
+V_0 = original_data[:, 2].astype(np.float64).reshape((len(T), 1)) # voltage at 0*tau
 
-# time the operation
+
 start = time.time()
-
-# store all the array in a list
-time_delay_datasets = [V_0[:-D*tau][:, None] for D in D_arr] # shape is different for each voltage value in the list
-
-for D_index in range(len(D_arr)):
-    # print(time_delay_datasets[D_index].shape)
-    # print(np.array([V_0[d*tau:-(D_arr[D_index]-d)*tau]
-    #     if -(D_arr[D_index]-d)*tau != 0 else V_0[d*tau:]
-    #     for d in range(1, 1+D_arr[D_index])]).T.shape)
-    # for each D we want to append to the array of data, a new dimension of voltage
-    time_delay_datasets[D_index] = np.concatenate(
-                                            [time_delay_datasets[D_index],
-                                                np.array([V_0[d*tau:-(D_arr[D_index]-d)*tau]
-                                                if -(D_arr[D_index]-d)*tau != 0 else V_0[d*tau:]
-                                                for d in range(1, 1+D_arr[D_index])]).T],
-                                            axis=1)
-
+time_delay_datasets = []
+for d in D_arr:
+    V_s = np.dstack([np.concatenate([V_0[-i*tau:, :], V_0[:-i*tau, :]], axis=0) for i in range(d+1)])[:, 0, :]
+    time_delay_datasets.append(V_s)
 end = time.time()
-
 print(f"This took {end-start}.")
 
 
