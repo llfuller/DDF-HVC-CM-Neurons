@@ -8,7 +8,7 @@ import tqdm
 import time
 import torch
 
-def count_fnn(dataset, threshold_R=R):
+def count_fnn(dataset, threshold_R=1e-1):
     """
     Parameters:
     dataset: A dataset should contain all the points and their closest point in pairs; example [(point_vec1, point_vec2)_1, (point_vec1, point_vec2)_2, ...]
