@@ -68,6 +68,13 @@ save_and_or_display = "save"
 # R_arr = np.array(np.power(10.0,[-6,-5.75,-5.5,-5.25,-5,-4.75,-4.5,-4.25,-4,-3.75,-3.5,-3.25,-3,-2.75,-2.5,-2.25,-2,-1.75,-1.5,-1.25,-1])) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
 # file_extension = "txt" # string; examples: "atf" or "txt" (case sensitive); don't include period; lowercase
 
+# Testing MSE convolutional sigma with hyperparams that worked for L63 t-dilation=0.5-driven Lilac 114 Neuron 1 (Epoch 2).
+# tau_arr = np.array([10])#np.array(range(10, 20)) # math notation: range(2,10) = all integers in bounds [2,9)
+# D_arr = np.array([15])#np.array(range(2, 10)) # math notation: range(2,10) = all integers in bounds [2,9)
+# beta_arr = np.array(np.power(10.0,[-3]))#np.array(np.power(10.0,range(-3,3))) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+# R_arr = np.array(np.power(10.0,[-6,-5.75,-5.5,-5.25,-5,-4.75,-4.5,-4.25,-4,-3.75,-3.5,-3.25,-3,-2.75,-2.5,-2.25,-2,-1.75,-1.5,-1.25,-1])) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+# file_extension = "txt" # string; examples: "atf" or "txt" (case sensitive); don't include period; lowercase
+
 # Testing MSE convolutional sigma with hyperparams that worked for L63 t-dilation=0.5-driven Lilac 114 Neuron 1 (Epoch 3).
 # tau_arr = np.array([10])#np.array(range(10, 20)) # math notation: range(2,10) = all integers in bounds [2,9)
 # D_arr = np.array([10])#np.array(range(2, 10)) # math notation: range(2,10) = all integers in bounds [2,9)
@@ -117,13 +124,94 @@ save_and_or_display = "save"
 # R_arr = np.array(np.power(10.0,[-6,-5.75,-5.5,-5.25,-5,-4.75,-4.5,-4.25,-4,-3.75,-3.5,-3.25,-3,-2.75,-2.5,-2.25,-2,-1.75,-1.5,-1.25,-1])) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
 # file_extension = "txt" # string; examples: "atf" or "txt" (case sensitive); don't include period; lowercase
 
+# Testing MSE convolutional sigma with hyperparams that worked for L63 t-dilation=0.5-driven Lilac 114 Neuron 1 (Epoch 5).
+# tau_arr = np.array([10])#np.array(range(10, 20)) # math notation: range(2,10) = all integers in bounds [2,9)
+# D_arr = np.array([10])#np.array(range(2, 10)) # math notation: range(2,10) = all integers in bounds [2,9)
+# beta_arr = np.array(np.power(10.0,[-3]))#np.array(np.power(10.0,range(-3,3))) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+# R_arr = np.array(np.power(10.0,[-6,-5.75,-5.5,-5.25,-5,-4.75,-4.5,-4.25,-4,-3.75,-3.5,-3.25,-3,-2.75,-2.5,-2.25,-2,-1.75,-1.5,-1.25,-1])) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+# file_extension = "txt" # string; examples: "atf" or "txt" (case sensitive); don't include period; lowercase
+
 # D Testing
-varying_hyperparam = "D"
+# varying_hyperparam = "D"
 # Testing MSE convolutional sigma with hyperparams that worked for ? t-dilation=?-driven Lilac 114 Neuron 1 (Epoch 1).
-tau_arr = np.array([10])#np.array(range(10, 20)) # math notation: range(2,10) = all integers in bounds [2,9)
-D_arr = np.array([2,4,6,8,10,12,15,18,20])#np.array(range(2, 10)) # math notation: range(2,10) = all integers in bounds [2,9)
-beta_arr = np.array(np.power(10.0,[-3]))#np.array(np.power(10.0,range(-3,3))) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
-R_arr = np.array(np.power(10.0,[-3])) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+# tau_arr = np.array([10])#np.array(range(10, 20)) # math notation: range(2,10) = all integers in bounds [2,9)
+# D_arr = np.array([2,4,6,8,10,12,15,18,20])#np.array(range(2, 10)) # math notation: range(2,10) = all integers in bounds [2,9)
+# beta_arr = np.array(np.power(10.0,[-3]))#np.array(np.power(10.0,range(-3,3))) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+# R_arr = np.array(np.power(10.0,[-3])) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+# file_extension = "txt" # string; examples: "atf" or "txt" (case sensitive); don't include period; lowercase
+
+# Testing MSE convolutional sigma with hyperparams that worked for L63x t-dilation=0.2-driven Lilac 114 Neuron 2 (Epoch 2).
+# tau_arr = np.array([10])#np.array(range(10, 20)) # math notation: range(2,10) = all integers in bounds [2,9)
+# D_arr = np.array([2,4,6,8,10,12,15,18,20])#np.array(range(2, 10)) # math notation: range(2,10) = all integers in bounds [2,9)
+# beta_arr = np.array(np.power(10.0,[-3]))#np.array(np.power(10.0,range(-3,3))) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+# R_arr = np.array(np.power(10.0,[-3])) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+# file_extension = "txt" # string; examples: "atf" or "txt" (case sensitive); don't include period; lowercase
+
+# Testing MSE convolutional sigma with hyperparams that worked for L63x t-dilation=0.5-driven Lilac 114 Neuron 1 (Epoch 3).
+# tau_arr = np.array([10])#np.array(range(10, 20)) # math notation: range(2,10) = all integers in bounds [2,9)
+# D_arr = np.array([2,4,6,8,10,12,15,18,20])#np.array(range(2, 10)) # math notation: range(2,10) = all integers in bounds [2,9)
+# beta_arr = np.array(np.power(10.0,[-3]))#np.array(np.power(10.0,range(-3,3))) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+# R_arr = np.array(np.power(10.0,[-3])) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+# file_extension = "txt" # string; examples: "atf" or "txt" (case sensitive); don't include period; lowercase
+
+# Tau Testing
+varying_hyperparam = "tau"
+# # Testing MSE convolutional sigma with hyperparams that worked for L63x t-dilation=0.5-driven Red 171 Neuron 2 (Epoch 1).
+# tau_arr = np.array([2,4,6,8,10,12,15,18,20])#np.array(range(10, 20)) # math notation: range(2,10) = all integers in bounds [2,9)
+# D_arr = np.array([10])#np.array(range(2, 10)) # math notation: range(2,10) = all integers in bounds [2,9)
+# beta_arr = np.array(np.power(10.0,[-3]))#np.array(np.power(10.0,range(-3,3))) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+# R_arr = np.array(np.power(10.0,[-3])) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+# file_extension = "txt" # string; examples: "atf" or "txt" (case sensitive); don't include period; lowercase
+
+# Tau Testing
+# Testing MSE convolutional sigma with hyperparams that worked for L63x t-dilation=0.5-driven Lilac 114 Neuron 1 (Epoch 3).
+# tau_arr = np.array([2,4,6,8,10,12,15,18,20])#np.array(range(10, 20)) # math notation: range(2,10) = all integers in bounds [2,9)
+# D_arr = np.array([10])#np.array(range(2, 10)) # math notation: range(2,10) = all integers in bounds [2,9)
+# beta_arr = np.array(np.power(10.0,[-3]))#np.array(np.power(10.0,range(-3,3))) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+# R_arr = np.array(np.power(10.0,[-3])) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+# file_extension = "txt" # string; examples: "atf" or "txt" (case sensitive); don't include period; lowercase
+
+# Tau Testing
+# Testing MSE convolutional sigma with hyperparams that worked for L63x t-dilation=0.2-driven Lilac 114 Neuron 2 (Epoch 2).
+# tau_arr = np.array([2,4,6,8,10,12,15,18,20])#np.array(range(10, 20)) # math notation: range(2,10) = all integers in bounds [2,9)
+# D_arr = np.array([15])#np.array(range(2, 10)) # math notation: range(2,10) = all integers in bounds [2,9)
+# beta_arr = np.array(np.power(10.0,[-3]))#np.array(np.power(10.0,range(-3,3))) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+# R_arr = np.array(np.power(10.0,[-3])) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+# file_extension = "txt" # string; examples: "atf" or "txt" (case sensitive); don't include period; lowercase
+
+# Testing MSE convolutional sigma with hyperparams that worked for L63x t-dilation=0.5-driven Lilac 114 Neuron 1 (Epoch 2).
+# tau_arr = np.array([2,4,6,8,10,12,15,18,20])#np.array(range(10, 20)) # math notation: range(2,10) = all integers in bounds [2,9)
+# D_arr = np.array([15])#np.array(range(2, 10)) # math notation: range(2,10) = all integers in bounds [2,9)
+# beta_arr = np.array(np.power(10.0,[-3]))#np.array(np.power(10.0,range(-3,3))) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+# R_arr = np.array(np.power(10.0,[-3])) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+# file_extension = "txt" # string; examples: "atf" or "txt" (case sensitive); don't include period; lowercase
+
+# Testing MSE convolutional sigma with hyperparams that worked for L63x t-dilation=0.5-driven Lilac 114 Neuron 1 (Epoch 5).
+# tau_arr = np.array([2,4,6,8,10,12,15,18,20])#np.array(range(10, 20)) # math notation: range(2,10) = all integers in bounds [2,9)
+# D_arr = np.array([10])#np.array(range(2, 10)) # math notation: range(2,10) = all integers in bounds [2,9)
+# beta_arr = np.array(np.power(10.0,[-3]))#np.array(np.power(10.0,range(-3,3))) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+# R_arr = np.array(np.power(10.0,[-4])) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+# file_extension = "txt" # string; examples: "atf" or "txt" (case sensitive); don't include period; lowercase
+
+# Testing MSE convolutional sigma with hyperparams that worked for L63x t-dilation=0.2-driven Lilac 242 Neuron 1 (Epoch 1).
+# tau_arr = np.array([2,4,6,8,10,12,15,18,20])#np.array(range(10, 20)) # math notation: range(2,10) = all integers in bounds [2,9)
+# D_arr = np.array([15])#np.array(range(2, 10)) # math notation: range(2,10) = all integers in bounds [2,9)
+# beta_arr = np.array(np.power(10.0,[-3]))#np.array(np.power(10.0,range(-3,3))) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+# R_arr = np.array(np.power(10.0,[-4])) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+# file_extension = "txt" # string; examples: "atf" or "txt" (case sensitive); don't include period; lowercase
+
+# Testing MSE convolutional sigma with hyperparams that worked for L63x t-dilation=0.2-driven Lilac 242 Neuron 1 (Epoch 9).
+# tau_arr = np.array([2,4,6,8,10,12,15,18,20])#np.array(range(10, 20)) # math notation: range(2,10) = all integers in bounds [2,9)
+# D_arr = np.array([15])#np.array(range(2, 10)) # math notation: range(2,10) = all integers in bounds [2,9)
+# beta_arr = np.array(np.power(10.0,[-3]))#np.array(np.power(10.0,range(-3,3))) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+# R_arr = np.array(np.power(10.0,[-3])) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+# file_extension = "txt" # string; examples: "atf" or "txt" (case sensitive); don't include period; lowercase
+
+# Testing MSE convolutional sigma with hyperparams that worked for L63x t-dilation=0.2-driven Lilac 242 Neuron 1 (Epoch 10).
+tau_arr = np.array([2,4,6,8,10,12,15,18,20])#np.array(range(10, 20)) # math notation: range(2,10) = all integers in bounds [2,9)
+D_arr = np.array([20])#np.array(range(2, 10)) # math notation: range(2,10) = all integers in bounds [2,9)
+beta_arr = np.array(np.power(10.0,[-4]))#np.array(np.power(10.0,range(-3,3))) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+R_arr = np.array(np.power(10.0,[-4])) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
 file_extension = "txt" # string; examples: "atf" or "txt" (case sensitive); don't include period; lowercase
 
 
@@ -136,10 +224,10 @@ Time_units = "ms"
 TT = 0.02 # delta t in Time_units units, time between samples if not specified through loaded files
 
 # Data directory to recursively load data from:
-root_directory = "Data2022-50KhZ/7-7-2022/Lilac 114/Neuron 1/"#"biocm_simulations/"#"cm_ddf/data/"#"Data2022-50KhZ/" # example: "HVC_biocm_data/simulations/" ; Include the final "/"
+root_directory = "Data2022-50KhZ/7-7-2022/Lilac 242/Neuron 1/"#"biocm_simulations/"#"cm_ddf/data/"#"Data2022-50KhZ/" # example: "HVC_biocm_data/simulations/" ; Include the final "/"
 
 # Use only this file:
-files_to_evaluate = ["epoch_1.txt"]#"biocm_phasic_lzo_1_1_10_100_200.mat"] # leave this list empty if you want to evaluate all files in root_directory recursively
+files_to_evaluate = ["epoch_10.txt"]#"biocm_phasic_lzo_1_1_10_100_200.mat"] # leave this list empty if you want to evaluate all files in root_directory recursively
 
 do_not_use_list = ["2014_09_10_0001.abf",
                    "2014_09_10_0002.abf",
@@ -327,15 +415,15 @@ for a_path in full_paths_list:
 
 
     # In[6]:
-    num_R_trials = 30
-    conv_MSE_R_trials_array = np.zeros((np.shape(R_arr)[0], num_R_trials, sigma_c_list.shape[0]))  # scalar MSE for each R (row) and trial (column)
-    print("Shape of conv_MSE_R_trials_array: " +str(np.shape(conv_MSE_R_trials_array)))
+    num_trials = 30
+    conv_MSE_trials_array = np.zeros((np.shape(tau_arr)[0], num_trials, sigma_c_list.shape[0]))  # scalar MSE for each R (row) and trial (column)
+    print("Shape of conv_MSE_trials_array: " +str(np.shape(conv_MSE_trials_array)))
     # =============================== Training and Prediction  =====================================
     print("Beginning Training and prediction for "+str(a_path))
-    for R_trial_index in range(num_R_trials):
-        trial_number_string = "trial_" + str(R_trial_index)
-        for tau in tau_arr:
-            for D in D_arr:
+    for trial_index in range(num_trials):
+        trial_number_string = "trial_" + str(trial_index)
+        for tau_index, tau in enumerate(tau_arr):
+            for D_index, D in enumerate(D_arr):
                 # random.seed(2022)
                 # np.random.seed(2022)
 
@@ -373,7 +461,7 @@ for a_path in full_paths_list:
 
                 time_preparing_to_run_beta_r = time.time()
                 print("Time to reach right before beta_r loop: "+str(time_preparing_to_run_beta_r-time_start))
-                # In[7]:
+                # # In[7]:
                 for beta in beta_arr:
                     for R_index, R in enumerate(R_arr):
                         # if (not math.isclose(beta,1.0)) or (not math.isclose(R,0.01)):
@@ -475,15 +563,17 @@ for a_path in full_paths_list:
                         save_utilities.save_text(data=np.column_stack((Center[:, 0], DDF.W[:-1])),
                                                  a_str=save_and_or_display,
                                                  save_location=directory_to_store_txt_data +"weights/"+ title + "_Weight(center_voltage).txt")
-
+                        #
                         # ========= Dawei Li's Convolution Spiking MSE Code ===============
-                        # simpling frequency: 50kHz, step size: 0.02ms
+                        # sampling frequency: 50kHz, step size: 0.02ms
                         # range of sigma_G
                         # load file here instead of regenerating by commenting out above and uncommenting next four lines
-                        # X = np.loadtxt(directory_to_store_txt_data + "prediction_and_truth/" + "_epoch_1 with tstep=0.02 ms, D = 10, Beta = 1.0e-03, R = 1.0e-03 Train TSteps = 499000, Centers = 500, tau = 10_time.txt")
-                        # Voltage_pred = np.loadtxt(directory_to_store_txt_data + "prediction_and_truth/" + "_epoch_1 with tstep=0.02 ms, D = 10, Beta = 1.0e-03, R = 1.0e-03 Train TSteps = 499000, Centers = 500, tau = 10_voltage_prediction.txt")
-                        # used_Voltage_test = np.loadtxt(directory_to_store_txt_data + "prediction_and_truth/" + "_epoch_1 with tstep=0.02 ms, D = 10, Beta = 1.0e-03, R = 1.0e-03 Train TSteps = 499000, Centers = 500, tau = 10_voltage_truth.txt")
-                        # title = '_epoch_1 with tstep=0.02 ms, D = 10, Beta = 1.0e-03, R = 1.0e-03 Train TSteps = 499000, Centers = 500, tau = 10_time.txt'
+                        # NoCenters = 500
+                        # title = str(neuron_name)+'_'+str(a_filename[:-4])+' with tstep='+str(TT)+' '+str(Time_units)+', D = '+str(D)+', Beta = '+str("{:.1e}".format(beta))+', R = '+str("{:.1e}".format(R))+' Train TSteps = '+str(length)+', Centers = '+str(NoCenters)+', tau = '+str(tau)
+                        # X = np.loadtxt(directory_to_store_txt_data + "prediction_and_truth/"+trial_number_string+"/" + title + "_time.txt")
+                        # Voltage_pred = np.loadtxt(directory_to_store_txt_data + "prediction_and_truth/"+trial_number_string+"/" + title + "_voltage_prediction.txt")
+                        # used_Voltage_test = np.loadtxt(directory_to_store_txt_data + "prediction_and_truth/"+trial_number_string+"/" + title + "_voltage_truth.txt")
+                        # print("Testing for "+str(title)+";"+" Trial "+str(trial_index))
 
                         cost_list = []
                         for sigma_c_index, sigma_convolution in enumerate(sigma_c_list):
@@ -511,7 +601,14 @@ for a_path in full_paths_list:
                             plt.close(fig)
                             cost = (np.sum((predict_conv - true_conv) ** 2)) / len(true_conv)
                             # cost_list.append(cost) # m
-                            conv_MSE_R_trials_array[R_index,R_trial_index,sigma_c_index] = cost
+                            if varying_hyperparam.lower() == "r":
+                                conv_MSE_trials_array[R_index,trial_index,sigma_c_index] = cost
+                            if varying_hyperparam.lower() == "d":
+                                conv_MSE_trials_array[D_index,trial_index,sigma_c_index] = cost
+                            if varying_hyperparam.lower() == "tau":
+                                conv_MSE_trials_array[tau_index,trial_index,sigma_c_index] = cost
+
+
                         print("COST WAS: "+str(cost))
 
                         # convert the unit of sigma_G from step to ms
@@ -519,9 +616,16 @@ for a_path in full_paths_list:
 
                         fig2 = plt.figure()
                         ax = fig2.add_subplot(111)
-                        ax.plot(sigma_range_in_ms, conv_MSE_R_trials_array[R_index, R_trial_index], linewidth=2)
+                        # ax.plot(sigma_range_in_ms, conv_MSE_trials_array[R_index, trial_index], linewidth=2)
+                        if varying_hyperparam.lower() == "r":
+                            ax.plot(sigma_range_in_ms, conv_MSE_trials_array[R_index, trial_index], linewidth=2)
+                        if varying_hyperparam.lower() == "d":
+                            ax.plot(sigma_range_in_ms, conv_MSE_trials_array[D_index, trial_index], linewidth=2)
+                        if varying_hyperparam.lower() == "tau":
+                            ax.plot(sigma_range_in_ms, conv_MSE_trials_array[tau_index, trial_index], linewidth=2)
+
                         ax.set_title("Convolved V(t)")
-                        ax.set_xlabel(r"$\sigma_C$("+str(Time_units)+")")
+                        ax.set_xlabel(r"$\sigma_C$("+str(Time_units)+")") # Check to make sure this is accurate
                         ax.set_ylabel(r"cost value(mV$^2$)")
                         if "current" in title.lower():
                             ax.get_lines()[0].set_color("orange")
@@ -532,14 +636,16 @@ for a_path in full_paths_list:
 
 
 print("Making convolutional MSE plots")
-np.save(directory_to_store_txt_data+"conv_MSE_"+str(varying_hyperparam)+"_trials_array.npy", conv_MSE_R_trials_array)
+
+np.save(directory_to_store_txt_data+"conv_MSE_"+str(varying_hyperparam)+"_trials_array.npy", conv_MSE_trials_array)
+conv_MSE_trials_array = np.load(directory_to_store_txt_data+"conv_MSE_"+str(varying_hyperparam)+"_trials_array.npy")
+NoCenters = 500
+
 for sigma_c_index, sigma_c in enumerate(sigma_c_list):
     MSE_range_fig = plt.figure()
     ax = MSE_range_fig.add_subplot(111)
-    y_err1 = np.std(conv_MSE_R_trials_array[:,:,sigma_c_index], axis=1)
-    # ax.errorbar(np.log10(R_arr), np.average(conv_MSE_R_trials_array[:,:,sigma_c_index],axis=1), yerr=y_err1)
-    for i in range(num_R_trials):
-        ax.scatter(np.log10(R_arr), np.log10(conv_MSE_R_trials_array[:,i,sigma_c_index]), s=5)
+    y_err1 = np.std(conv_MSE_trials_array[:,:,sigma_c_index], axis=1)
+    # ax.errorbar(np.log10(R_arr), np.average(conv_MSE_trials_array[:,:,sigma_c_index],axis=1), yerr=y_err1)
     ax.set_ylabel("log10(MSE after convolution with Gaussian)")
     ax.xaxis.grid()
     ax.yaxis.grid()
@@ -547,10 +653,25 @@ for sigma_c_index, sigma_c in enumerate(sigma_c_list):
         title = str(neuron_name) + '_' + str(a_filename[:-4]) + ' with tstep=' + str(TT) + ' ' + str(
             Time_units) + ', D = ' + str(D) + ', Beta = ' + str("{:.1e}".format(beta)) + ', R = variable' + ', Train TSteps = ' + str(length) + ', Centers = ' + str(NoCenters) + ', tau = ' + str(tau)
         ax.set_xlabel("log10(R)")
+        for i in range(num_trials):
+            ax.scatter(np.log10(R_arr), np.log10(conv_MSE_trials_array[:,i,sigma_c_index]), s=5)
+
 
     if varying_hyperparam.lower() == "d":
         title = str(neuron_name) + '_' + str(a_filename[:-4]) + ' with tstep=' + str(TT) + ' ' + str(
             Time_units) + ', D = variable' + ', Beta = ' + str("{:.1e}".format(beta)) + ', R = '+str(R) + ', Train TSteps = ' + str(length) + ', Centers = ' + str(NoCenters) + ', tau = ' + str(tau)
-        ax.set_xlabel("log10(D)")
+        ax.set_xlabel("D")
+        for i in range(num_trials):
+            ax.scatter(D_arr, np.log10(conv_MSE_trials_array[:,i,sigma_c_index]), s=5)#np.log10(conv_MSE_trials_array[:,i,sigma_c_index]), s=5)
+        ax.set_ylabel("log10(MSE after convolution with Gaussian)")
 
-    save_utilities.save_and_or_display_plot(MSE_range_fig, "save", directory_to_store_plots +"convolution_MSE_metric/"+ title+"_MSE_vs_R_for_sigma="+str(sigma_c)+".png")
+    if varying_hyperparam.lower() == "tau":
+        title = str(neuron_name) + '_' + str(a_filename[:-4]) + ' with tstep=' + str(TT) + ' ' + str(
+            Time_units) + ', D = ' + str(D) + ', Beta = ' + str("{:.1e}".format(beta)) + ', R = '+str(R) + ', Train TSteps = ' + str(length) + ', Centers = ' + str(NoCenters) + ', tau = variable'
+        ax.set_xlabel("tau ("+str("{:.2e}".format(tau*TT))+" "+str(Time_units)+")")
+        for i in range(num_trials):
+            ax.scatter(tau_arr, np.log10(conv_MSE_trials_array[:,i,sigma_c_index]), s=5)
+        ax.set_ylabel("log10(MSE after convolution with Gaussian)")
+
+
+    save_utilities.save_and_or_display_plot(MSE_range_fig, "save", directory_to_store_plots +"convolution_MSE_metric/"+ title+"_MSE_vs_"+str()+"_for_sigma="+str(sigma_c)+".png")
