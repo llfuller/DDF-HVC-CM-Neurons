@@ -38,6 +38,23 @@ def save_txt_with_makedir(data, save_location):
         print("Saving: "+str(directory + str(filename)))
         np.savetxt(directory + str(filename), data)
 
+def save_dict_with_makedir(data, save_location):
+    """
+    input: dictionary data, and string "save_location" (example: directory1/directory2/..../filename.ext)
+    Creates all directories within save_location if they don't yet exist, then saves data to save_location
+    """
+    if "/" in save_location:
+        last_slash_index = save_location.rfind('/') #finds last location of "/" in save_location
+    directory = save_location[:last_slash_index]
+    filename  = save_location[last_slash_index:]
+    if not os.path.isdir(directory):
+        print("Creating "+str(directory))
+        os.makedirs(directory)
+    if os.path.isdir(directory):
+        print("Saving to "+str(directory))
+        print("Saving: "+str(directory + str(filename)))
+        np.save(directory + str(filename), data)
+
 
 def save_and_or_display_plot(figure, a_str, save_location):
     """
