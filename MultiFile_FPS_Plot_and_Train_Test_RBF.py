@@ -119,8 +119,8 @@ save_and_or_display = "save"
 
 # Testing MSE convolutional sigma with hyperparams that worked for L63 t-dilation=0.2-driven Lilac 242 Neuron 1 (Epoch 10).
 # tau_arr = np.array([15])#np.array(range(10, 20)) # math notation: range(2,10) = all integers in bounds [2,9)
-# D_arr = np.array([15])#np.array(range(2, 10)) # math notation: range(2,10) = all integers in bounds [2,9)
-# beta_arr = np.array(np.power(10.0,[-3]))#np.array(np.power(10.0,range(-3,3))) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+# D_arr = np.array([20])#np.array(range(2, 10)) # math notation: range(2,10) = all integers in bounds [2,9)
+# beta_arr = np.array(np.power(10.0,[-4]))#np.array(np.power(10.0,range(-3,3))) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
 # R_arr = np.array(np.power(10.0,[-6,-5.75,-5.5,-5.25,-5,-4.75,-4.5,-4.25,-4,-3.75,-3.5,-3.25,-3,-2.75,-2.5,-2.25,-2,-1.75,-1.5,-1.25,-1])) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
 # file_extension = "txt" # string; examples: "atf" or "txt" (case sensitive); don't include period; lowercase
 
