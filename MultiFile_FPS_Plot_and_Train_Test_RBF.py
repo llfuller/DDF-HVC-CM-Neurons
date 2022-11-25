@@ -36,15 +36,13 @@ save_and_or_display = "save"
 # beta_arr = np.array(np.power(10.0,[-6,-5,-4,-3]))#np.array(np.power(10.0,range(-3,3))) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
 # R_arr = np.array(np.power(10.0,[-6,-5,-4,-3])) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
 
-tau_arr = np.array(
-    [10]
-)  # math notation: range(2,10) = all integers in bounds [2,9)
+tau_arr = np.array([10])  # math notation: range(2,10) = all integers in bounds [2,9)
 D_arr = np.array(
     [2, 5, 10, 15, 20, 25, 30, 40, 50, 60, 80, 100]
 )  # math notation: range(2,10) = all integers in bounds [2,9)
 beta_arr = np.array(
     np.power(10.0, [-3])
-)  #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+)  # range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
 R_arr = np.array(
     np.power(10.0, [-3])
 )  # range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
@@ -61,20 +59,16 @@ Time_units = "ms"
 TT = 0.02  # delta t in Time_units units, time between samples if not specified through loaded files
 
 # Data directory to recursively load data from:
-root_directory = (
-    "Data2022-50KhZ/7-7-2022/Lilac 114/Neuron 1/"  # example: "HVC_biocm_data/simulations/" ; Include the final "/"
-)
+root_directory = "Data2022-50KhZ/7-7-2022/Lilac 114/Neuron 1/"  # example: "HVC_biocm_data/simulations/" ; Include the final "/"
 
 # Use only this file:
-files_to_evaluate = (
-    [
-        # "7-7-2022/Lilac 114/Neuron 1/epoch_1.txt",
-        # "7-7-2022/Lilac 114/Neuron 1/epoch_2.txt",
-        # "7-7-2022/Lilac 114/Neuron 1/epoch_3.txt",
-        # "7-7-2022/Lilac 114/Neuron 1/epoch_4.txt",
-        'epoch_1.txt'
-    ]
-)  # "biocm_phasic_lzo_1_1_10_100_200.mat"] # leave this list empty if you want to evaluate all files in root_directory recursively
+files_to_evaluate = [
+    # "7-7-2022/Lilac 114/Neuron 1/epoch_1.txt",
+    # "7-7-2022/Lilac 114/Neuron 1/epoch_2.txt",
+    # "7-7-2022/Lilac 114/Neuron 1/epoch_3.txt",
+    # "7-7-2022/Lilac 114/Neuron 1/epoch_4.txt",
+    "epoch_1.txt"
+]  # "biocm_phasic_lzo_1_1_10_100_200.mat"] # leave this list empty if you want to evaluate all files in root_directory recursively
 
 do_not_use_list = (
     []  # file attached to Meliza's data when I received it said not to use these. The input signals are not suitable for training
@@ -161,7 +155,9 @@ for a_path in full_paths_list:
         loaded_t = imported_data[:, 2]
     else:  # primarily .txt files
         # if root_directory == "Data2022-50KhZ/": # TODO: Change this back when needed, read below
-        if root_directory == "Data2022-50KhZ/7-7-2022/Lilac 114/Neuron 1/": # This is temporary for only for evaluating the Lilac 114 Neuron1
+        if (
+            root_directory == "Data2022-50KhZ/7-7-2022/Lilac 114/Neuron 1/"
+        ):  # This is temporary for only for evaluating the Lilac 114 Neuron1
             loaded_IV = np.loadtxt(a_path)
             loaded_I = loaded_IV[:, 0]
             loaded_V = loaded_IV[:, 1]
