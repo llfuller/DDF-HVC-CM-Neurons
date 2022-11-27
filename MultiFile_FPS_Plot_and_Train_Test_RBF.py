@@ -208,10 +208,18 @@ varying_hyperparam = "tau"
 # file_extension = "txt" # string; examples: "atf" or "txt" (case sensitive); don't include period; lowercase
 
 # Testing MSE convolutional sigma with hyperparams that worked for L63x t-dilation=0.2-driven Lilac 242 Neuron 1 (Epoch 10).
+# tau_arr = np.array([2,4,6,8,10,12,15,18,20])#np.array(range(10, 20)) # math notation: range(2,10) = all integers in bounds [2,9)
+# D_arr = np.array([20])#np.array(range(2, 10)) # math notation: range(2,10) = all integers in bounds [2,9)
+# beta_arr = np.array(np.power(10.0,[-4]))#np.array(np.power(10.0,range(-3,3))) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+# R_arr = np.array(np.power(10.0,[-4])) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+# file_extension = "txt" # string; examples: "atf" or "txt" (case sensitive); don't include period; lowercase
+
+
+# Testing MSE convolutional sigma with hyperparams that worked for L63x t-dilation=0.2-driven Red 171 Neuron 2 (Epoch 8).
 tau_arr = np.array([2,4,6,8,10,12,15,18,20])#np.array(range(10, 20)) # math notation: range(2,10) = all integers in bounds [2,9)
 D_arr = np.array([20])#np.array(range(2, 10)) # math notation: range(2,10) = all integers in bounds [2,9)
-beta_arr = np.array(np.power(10.0,[-4]))#np.array(np.power(10.0,range(-3,3))) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
-R_arr = np.array(np.power(10.0,[-4])) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+beta_arr = np.array(np.power(10.0,[-3]))#np.array(np.power(10.0,range(-3,3))) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+R_arr = np.array(np.power(10.0,[-3])) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
 file_extension = "txt" # string; examples: "atf" or "txt" (case sensitive); don't include period; lowercase
 
 
@@ -224,10 +232,10 @@ Time_units = "ms"
 TT = 0.02 # delta t in Time_units units, time between samples if not specified through loaded files
 
 # Data directory to recursively load data from:
-root_directory = "Data2022-50KhZ/7-7-2022/Lilac 242/Neuron 1/"#"biocm_simulations/"#"cm_ddf/data/"#"Data2022-50KhZ/" # example: "HVC_biocm_data/simulations/" ; Include the final "/"
+root_directory = "Data2022-50KhZ/7-7-2022/Red 171/Neuron 2/"#"biocm_simulations/"#"cm_ddf/data/"#"Data2022-50KhZ/" # example: "HVC_biocm_data/simulations/" ; Include the final "/"
 
 # Use only this file:
-files_to_evaluate = ["epoch_10.txt"]#"biocm_phasic_lzo_1_1_10_100_200.mat"] # leave this list empty if you want to evaluate all files in root_directory recursively
+files_to_evaluate = ["epoch_8.txt"]#"biocm_phasic_lzo_1_1_10_100_200.mat"] # leave this list empty if you want to evaluate all files in root_directory recursively
 
 do_not_use_list = ["2014_09_10_0001.abf",
                    "2014_09_10_0002.abf",
