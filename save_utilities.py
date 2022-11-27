@@ -51,7 +51,6 @@ def save_npy_with_makedir(data, save_location):
         print("Creating "+str(directory))
         os.makedirs(directory)
     if os.path.isdir(directory):
-        print("Saving to "+str(directory))
         print("Saving: "+str(directory + str(filename)))
         np.save(directory + str(filename), data)
 
