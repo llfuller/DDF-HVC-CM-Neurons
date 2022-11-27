@@ -13,6 +13,11 @@ import random
 import copy
 import glob
 from scipy.ndimage import gaussian_filter1d
+import fnn
+import re
+import os
+import tqdm
+import collections
 
 import numpy.fft
 import math
@@ -78,6 +83,12 @@ FPS_xlim = (0, 0.175)
 
 fraction_of_data_for_training = 4.0 / 6.0
 
+window = 100000 # number of timesteps to either side to consider when looking for nearest neighbors, ex: 5 => 10 total.
+tau = 5
+R_ratio = 1e-2
+D_arr = np.array([1, 2, 4, 6, 8, 10, 12, 15, 18, 20])
+save_data = True
+
 # In[3]:
 
 # ======== do not modify below ==========
@@ -127,6 +138,9 @@ for a_path in full_paths_list:
     directory_to_store_txt_data = (
         "data_derived/" + directory_to_read_input_data + "txt_V_I_t/"
     )
+    directory_to_store_FNN_data = (
+        "data_derived/" + directory_to_read_input_data + "FNN/"
+    )
     neuron_name = save_utilities.give_name_if_included_in_path(a_path, neuron_name_list)
     print(
         "================================New File =================================================="
@@ -171,589 +185,107 @@ for a_path in full_paths_list:
         loaded_t = TT * np.array(range(len(loaded_V)))
 
     total_num_timesteps_in_data = len(loaded_V)
-    # train_timestep_end = round(
-    #     total_num_timesteps_in_data * fraction_of_data_for_training
-    # )  # 4/6 for neuron 2 epoch 5, and 5/6 for everything else
-    # Voltage_train = loaded_V[:train_timestep_end]
-    # Current_train = loaded_I[:train_timestep_end]
-    # Time_train = loaded_t[:train_timestep_end]
-    # Voltage_test = loaded_V[train_timestep_end:total_num_timesteps_in_data]
-    # Current_test = loaded_I[train_timestep_end:total_num_timesteps_in_data]
-    # Time_test = loaded_t[train_timestep_end:total_num_timesteps_in_data]
-    # length = Voltage_train.shape[0] - 1000  # - 1000 just to give breathing room
-    # PreLength = Voltage_test.shape[0] - 1000  # - 1000 just to give breathing room
+    print(loaded_I.shape)
+    datasets, time_delay_indices, time_delay_datapairs = fnn.run_this(loaded_I, loaded_V, loaded_t,
+                                                                      search_window_size = window)
 
-    # # In[5]:
-    # # ===============================  POWER SPECTRA  =====================================
-    # # FFT Train
-    # if Time_units.lower() == "s":
-    #     freq_units = "Hz"  # frequency units
-    # if Time_units.lower() == "ms":
-    #     freq_units = "kHz"  # frequency units
-    # TT = float(loaded_t[2] - loaded_t[1])  # delta t; time between data samples
-    # sampling_rate = 1.0 / TT  # frequency (1/ms = kHz)
-    # FPS_list, freq_array = Fourier_Power_Spectrum.calc_Fourier_power_spectrum(
-    #     [Current_train, Voltage_train], Time_train
-    # )
-    # delta_freq = freq_array[3] - freq_array[2]
-    # freq_without_0_index = freq_array[1:]
-    # power_spectrum = FPS_list[0]
-    # normalized_power_spec_without_0_index = power_spectrum[1:] / np.max(
-    #     np.abs(power_spectrum[1:])
-    # )
-    # # --------------- Current FPS Plots --------------
-    # # Training Current with no modifications
-    # fig = plotting_utilities.plotting_quantity(
-    #     x_arr=freq_array,
-    #     y_arr=power_spectrum / np.max(np.abs(power_spectrum)),
-    #     title="Power(freq) of current_train (Neuron "
-    #     + str(neuron_name)
-    #     + "_"
-    #     + str(a_filename[:-4])
-    #     + ")",
-    #     xlabel="Frequency (kHz)",
-    #     ylabel="Normalized Power (1.0 = max from whole spectrum)",
-    #     save_and_or_display=save_and_or_display,
-    #     save_location=directory_to_store_plots
-    #     + "Fourier_analysis/"
-    #     + "Power spectrum of training current (Neuron "
-    #     + str(neuron_name)
-    #     + "_"
-    #     + str(a_filename[:-4])
-    #     + ")_full_data.png",
-    #     xlim=None,
-    # )
-    # save_utilities.save_text(
-    #     data=np.column_stack((freq_array, power_spectrum)),
-    #     a_str=save_and_or_display,
-    #     save_location=directory_to_store_txt_data
-    #     + "Fourier_analysis/"
-    #     + str(a_filename[:-4])
-    #     + "_Fourier_Spectrum_training_current-full_data.txt",
-    # )
+    # datasets is a list of len(D_E_array) arrays, with shape (timesteps, D_E)
+    for dataset_index, a_time_delay_dataset in enumerate(datasets):
+        print(a_time_delay_dataset.shape)
+        print(f"Saving .npy files for D={a_time_delay_dataset.shape[1]}")
+        np.save(directory_to_store_FNN_data+f"min_datapairs_D={a_time_delay_dataset.shape[1]}_window={window}_datapoints", time_delay_datapairs[dataset_index])
+        np.save(directory_to_store_FNN_data+f"min_datapairs_D={a_time_delay_dataset.shape[1]}_window={window}_location", time_delay_indices[dataset_index])
 
-    # # Training Current - No index 0, Normalized, many windows
-    # for window_size in [0.175]:  # 5, 75, 150, 300]:
-    #     final_index = int(round(float(window_size) / delta_freq))
-    #     fig = plotting_utilities.plotting_quantity(
-    #         x_arr=freq_without_0_index,
-    #         y_arr=normalized_power_spec_without_0_index,
-    #         title="Power(freq) of current_train (Neuron "
-    #         + str(neuron_name)
-    #         + "_"
-    #         + str(a_filename[:-4])
-    #         + ")",
-    #         xlabel="Frequency (kHz)",
-    #         ylabel="Normalized Power (1.0 = max from [1:])",
-    #         save_and_or_display=save_and_or_display,
-    #         save_location=directory_to_store_plots
-    #         + "Fourier_analysis/"
-    #         + "Power spectrum of training current (Neuron "
-    #         + str(neuron_name)
-    #         + "_"
-    #         + str(a_filename[:-4])
-    #         + ")_last_freq_shown="
-    #         + str(window_size)
-    #         + ".png",
-    #         xlim=(0, window_size),
-    #     )
-    #     save_utilities.save_text(
-    #         data=np.column_stack(
-    #             (
-    #                 freq_without_0_index[:final_index],
-    #                 normalized_power_spec_without_0_index[:final_index],
-    #             )
-    #         ),
-    #         a_str=save_and_or_display,
-    #         save_location=directory_to_store_txt_data
-    #         + "Fourier_analysis/"
-    #         + str(a_filename[:-4])
-    #         + "_Fourier_Spectrum_training_current-_last_freq_shown="
-    #         + str(window_size)
-    #         + ".txt",
-    #     )
+    #data_derived/" + directory_to_read_input_data +
+    """User Defined Parameters: specify root path for loaded files"""
+    root = directory_to_store_FNN_data
 
-    # # --------------- Voltage FPS Plots --------------
-    # power_spectrum = FPS_list[1]
-    # # frequency = np.linspace(0, sampling_rate/2, len(power_spectrum))
-    # normalized_power_spec_without_0_index = power_spectrum[1:] / np.max(
-    #     np.abs(power_spectrum[1:])
-    # )
+    """===================================
+    Load Saved min distance datasets
+    ==================================="""
+    # load from all the npy file
+    D_data_dict, D_index_dict = {}, {}
 
-    # # Training Voltage with no modifications
-    # fig = plotting_utilities.plotting_quantity(
-    #     x_arr=freq_array,
-    #     y_arr=power_spectrum / np.max(np.abs(power_spectrum)),
-    #     title="Power(freq) of voltage_train (Neuron "
-    #     + str(neuron_name)
-    #     + "_"
-    #     + str(a_filename[:-4])
-    #     + ")",
-    #     xlabel="Frequency (kHz)",
-    #     ylabel="Normalized Power (1.0 = max from whole spectrum)",
-    #     save_and_or_display=save_and_or_display,
-    #     save_location=directory_to_store_plots
-    #     + "Fourier_analysis/"
-    #     + "Power spectrum of training voltage (Neuron "
-    #     + str(neuron_name)
-    #     + "_"
-    #     + str(a_filename[:-4])
-    #     + ")_full_data.png",
-    #     xlim=None,
-    # )
-    # save_utilities.save_text(
-    #     data=np.column_stack((freq_array, power_spectrum)),
-    #     a_str=save_and_or_display,
-    #     save_location=directory_to_store_txt_data
-    #     + "Fourier_analysis/"
-    #     + str(a_filename[:-4])
-    #     + "_Fourier_Spectrum_training_voltage-full_data.txt",
-    # )
+    try:
+        os.listdir(root)
+    except:
+        root = "FNN/"
 
-    # # Training Current - No index 0, Normalized, many windows
-    # for window_size in [0.175]:  # 5, 75, 150, 300]:
-    #     final_index = int(round(float(window_size) / delta_freq))
-    #     fig = plotting_utilities.plotting_quantity(
-    #         x_arr=freq_without_0_index,
-    #         y_arr=normalized_power_spec_without_0_index,
-    #         title="Power(freq) of voltage_train (Neuron "
-    #         + str(neuron_name)
-    #         + "_"
-    #         + str(a_filename[:-4])
-    #         + ")",
-    #         xlabel="Frequency (kHz)",
-    #         ylabel="Normalized Power (1.0 = max from [1:])",
-    #         save_and_or_display=save_and_or_display,
-    #         save_location=directory_to_store_plots
-    #         + "Fourier_analysis/"
-    #         + "Power spectrum of training voltage (Neuron "
-    #         + str(neuron_name)
-    #         + "_"
-    #         + str(a_filename[:-4])
-    #         + ")_last_freq_shown="
-    #         + str(window_size)
-    #         + ".png",
-    #         xlim=(0, window_size),
-    #     )
-    #     save_utilities.save_text(
-    #         data=np.column_stack(
-    #             (
-    #                 freq_without_0_index[:final_index],
-    #                 normalized_power_spec_without_0_index[:final_index],
-    #             )
-    #         ),
-    #         a_str=save_and_or_display,
-    #         save_location=directory_to_store_txt_data
-    #         + "Fourier_analysis/"
-    #         + str(a_filename[:-4])
-    #         + "_Fourier_Spectrum_training_voltage-_last_freq_shown="
-    #         + str(window_size)
-    #         + ".txt",
-    #     )
+    for filepath in os.listdir(root):
+        if 'min_datapairs' not in filepath:
+            continue
+        # print(filepath)
+        D = int(re.search("D=([0-9]*)", filepath).group(1))
+        window_size = int(re.search("window=([0-9]*)", filepath).group(1))
+        data = True if re.search("datapoints", filepath) else False
+        if data:
+            D_data_dict[(D, window_size)] = np.load(root+filepath)
+        else:
+            D_index_dict[(D, window_size)] = np.load(root+filepath)
 
-    # # ===============================  END OF POWER SPECTRA  =====================================
-    # # ===============================  Plotting training and testing current and voltage  =====================================
-    # plotting_utilities.plotting_quantity(
-    #     x_arr=Time_train,
-    #     y_arr=Current_train,
-    #     title="Training Current",
-    #     xlabel="Time (" + str(Time_units) + ")",
-    #     ylabel="Current (" + str(Current_units) + ")",
-    #     save_and_or_display=save_and_or_display,
-    #     save_location=directory_to_store_plots
-    #     + "I_V_training_and_testing/"
-    #     + "Train 1 first half Test 1 second half"
-    #     + " Training Current.png",
-    # )
-    # plotting_utilities.plotting_quantity(
-    #     x_arr=Time_train,
-    #     y_arr=Voltage_train,
-    #     title="Training Voltage",
-    #     xlabel="Time (" + str(Time_units) + ")",
-    #     ylabel="Voltage (" + str(Voltage_units) + ")",
-    #     save_and_or_display=save_and_or_display,
-    #     save_location=directory_to_store_plots
-    #     + "I_V_training_and_testing/"
-    #     + "Train 1 first half Test 1 second half"
-    #     + " Training Voltage.png",
-    # )
 
-    # plotting_utilities.plotting_quantity(
-    #     x_arr=Time_test,
-    #     y_arr=Current_test,
-    #     title="Test Current",
-    #     xlabel="Time (" + str(Time_units) + ")",
-    #     ylabel="Current (" + str(Current_units) + ")",
-    #     save_and_or_display=save_and_or_display,
-    #     save_location=directory_to_store_plots
-    #     + "I_V_training_and_testing/"
-    #     + "Train 1 first half Test 1 second half"
-    #     + " Test Current.png",
-    # )
-    # plotting_utilities.plotting_quantity(
-    #     x_arr=Time_test,
-    #     y_arr=Voltage_test,
-    #     title="Test Voltage",
-    #     xlabel="Time (" + str(Time_units) + ")",
-    #     ylabel="Voltage (" + str(Voltage_units) + ")",
-    #     save_and_or_display=save_and_or_display,
-    #     save_location=directory_to_store_plots
-    #     + "I_V_training_and_testing/"
-    #     + "Train 1 first half Test 1 second half"
-    #     + " Test Voltage.png",
-    # )
+    # evaluate each dataset's FNN ratio with different R values
+    D_results = collections.defaultdict(list)  # list of fnn ratios for each (D, window_size combo)
+    exp = np.concatenate(
+        [np.arange(5, 1, -1), np.array([0]), np.arange(-1, -5, -1)])  # array([ 5,  4,  3,  2, -1, -2, -3, -4])
+    for (d, window), d_data in tqdm(D_data_dict.items()):
+        for e in exp:
+            R = float(f'1e{e}')
+            fnn_ratio = fnn.count_fnn(D_index_dict[(d, window)], d_data, threshold_R=R)
+            D_results[(d, window)].append(fnn_ratio)
 
-    # # In[6]:
-    # # =============================== Training and Prediction  =====================================
-    # print("Beginning Training and prediction for " + str(a_path))
-    # for tau in tau_arr:
-    #     for D in D_arr:
-    #         random.seed(2022)
-    #         np.random.seed(2022)
+    # divide the graph into two plots by windows, and sort by D values
+    D_100000 = {}
+    D_1000 = {}
 
-    #         print(
-    #             "========================New tau and D combination =================="
-    #         )
-    #         # if tau != tau_specified or D!= D_specified:
-    #         #     continue  # want to try predicting only this neuron since it's complex and most interesting
-    #         time_start = time.time()
-    #         Xdata = Voltage_train
-    #         NoCenters_no_thresh = 500
-    #         # NoCenters_above_thresh = 50
-    #         DDF = Gauss()
-    #         # Combine centers above threshold with centers determined by kmeans
-    #         Centers_k_means = DDF.KmeanCenter(
-    #             Xdata, NoCenters_no_thresh, D, length, tau
-    #         )
-    #         time_k_centers_done = time.time()
-    #         print("Time to find k centers: " + str(time_k_centers_done - time_start))
-    #         temp_array = copy.deepcopy(Xdata)
-    #         temp_array[temp_array < -50] = -100
-    #         # Centers_above_thresh = DDF.KmeanCenter(temp_array,NoCenters_above_thresh,D,length,tau);
-    #         # Center = np.concatenate((Centers_k_means,Centers_above_thresh),axis=0)
-    #         Center = Centers_k_means
+    for (d, window_size), lst in D_results.items():
+        if window_size == 1000:
+            D_1000[d] = lst
+        if window_size == 100000:
+            D_100000[d] = lst
 
-    #         NoCenters = np.shape(Center)[0]
-    #         print(NoCenters)
-    #         print("Centers:" + str(Center.shape))
-    #         np.savetxt(
-    #             "centers/Center "
-    #             + str(neuron_name)
-    #             + "_"
-    #             + str(a_filename[:-4])
-    #             + "(D,tau,NumCenters)="
-    #             + str((D, tau, NoCenters))
-    #             + ".txt",
-    #             Center,
-    #         )
-    #         Center = np.loadtxt(
-    #             "centers/Center "
-    #             + str(neuron_name)
-    #             + "_"
-    #             + str(a_filename[:-4])
-    #             + "(D,tau,NumCenters)="
-    #             + str((D, tau, NoCenters))
-    #             + ".txt"
-    #         )
+    D_1000 = dict(sorted(D_1000.items(), key=lambda x: x[0]))
+    D_100000 = dict(sorted(D_100000.items(), key=lambda x: x[0]))
 
-    #         stim_train = Current_train
-    #         Pdata = Voltage_test
-    #         bias = (
-    #             tau * (D - 1) + 1
-    #         )  # 50 # should be larger than tau*(D-1) or something like that
-    #         # X = np.arange(bias,bias+PreLength*TT,TT)
-    #         X = Time_test[bias : bias + PreLength]  # bias -1 maybe?
+    # plot fnn vs R for each D
+    window = 1000
+    r, c = 5, len(D_1000) // 4
+    fig, axes = plt.subplots(r, c, figsize=(18, 14))
+    fig.tight_layout(pad=3.0)
+    r_i, c_i = 0, 0
+    for d, fnn_data in D_1000.items():
+        axes[r_i, c_i].set_title(f'D={d}, window={window}')
+        axes[r_i, c_i].set_xlabel("R's Exponents")
+        axes[r_i, c_i].set_ylabel("FNN Ratio")
+        axes[r_i, c_i].scatter(exp, fnn_data)
+        c_i += 1
+        if c_i == c:
+            c_i = 0
+            r_i += 1
 
-    #         time_preparing_to_run_beta_r = time.time()
-    #         print(
-    #             "Time to reach right before beta_r loop: "
-    #             + str(time_preparing_to_run_beta_r - time_start)
-    #         )
-    #         # In[7]:
-    #         for beta in beta_arr:
-    #             for R in R_arr:
-    #                 # if (not math.isclose(beta,1.0)) or (not math.isclose(R,0.01)):
-    #                 #     continue
-    #                 print("(tau, D, beta, R) = " + str((tau, D, beta, R)))
-    #                 time_beta_r_start = time.time()
-    #                 title = (
-    #                     str(neuron_name)
-    #                     + "_"
-    #                     + str(a_filename[:-4])
-    #                     + " with tstep="
-    #                     + str(TT)
-    #                     + " "
-    #                     + str(Time_units)
-    #                     + ", D = "
-    #                     + str(D)
-    #                     + ", Beta = "
-    #                     + str("{:.1e}".format(beta))
-    #                     + ", R = "
-    #                     + str("{:.1e}".format(R))
-    #                     + " Train TSteps = "
-    #                     + str(length)
-    #                     + ", Centers = "
-    #                     + str(NoCenters)
-    #                     + ", tau = "
-    #                     + str(tau)
-    #                 )
-    #                 # print(R)
-    #                 # print("Shape of Xdata is now "+str(Xdata.shape))
 
-    #                 F = DDF.FuncApproxF(
-    #                     Xdata, length, Center, beta, R, D, stim_train, tau
-    #                 )
-    #                 time_beta_r_trained = time.time()
-    #                 print(
-    #                     "Time to run one beta-r  training: "
-    #                     + str(time_beta_r_trained - time_beta_r_start)
-    #                 )
-    #                 time_beta_r_start_prediction = time.time()
-    #                 PredValidation = DDF.PredictIntoTheFuture(
-    #                     F,
-    #                     PreLength,
-    #                     Current_test[bias - 1 :],
-    #                     Pdata[bias - 1 - (D - 1) * tau :],
-    #                 )
-    #                 time_beta_r_end_prediction = time.time()
-    #                 print(
-    #                     "Time to run one beta-r  prediction: "
-    #                     + str(time_beta_r_end_prediction - time_beta_r_start_prediction)
-    #                 )
+    data = []
+    for (d, window), fnn_data in D_results.items():
+        data.append((d, fnn_data[4]))  # get fnn for R's exponent is -1 for all D values
 
-    #                 # Tau8
-    #                 plt.figure(figsize=(20, 10))
-    #                 plt.plot(
-    #                     X,
-    #                     Pdata[bias : bias + PreLength],
-    #                     label="True Voltage",
-    #                     color="black",
-    #                 )
-    #                 plt.plot(
-    #                     X,
-    #                     PredValidation[
-    #                         tau * (D - 1) + 1 : tau * (D - 1) + PreLength + 1
-    #                     ],
-    #                     "r--",
-    #                     label="Prediction",
-    #                 )
-    #                 plt.xlabel("Time (" + str(Time_units) + ")", fontsize=20)
-    #                 plt.ylabel("Voltage (" + str(Voltage_units) + ")", fontsize=20)
-    #                 plt.legend()
-    #                 plt.title(title, fontsize=20)
-    #                 # plt.savefig('Validation Prediction Result')
-    #                 plt.savefig(directory_to_store_plots + title + ".png")
-    #                 # plt.show
-    #                 print(
-    #                     "Done with "
-    #                     + str(
-    #                         (directory_to_read_input_data)
-    #                         + str(neuron_name)
-    #                         + str((tau, D, beta, R))
-    #                     )
-    #                 )
-    #                 time_beta_r_end = time.time()
-    #                 print(
-    #                     "Time to run one beta-r train plus prediction: "
-    #                     + str(time_beta_r_end - time_beta_r_start)
-    #                 )
+    # extra sorting step because the order for D is weird
+    data = sorted(data, key=lambda x: x[0])
 
-    #                 print("Saving training and testing data to files")
-    #                 training_times = loaded_t[
-    #                     : train_timestep_end - 1000 + tau * D
-    #                 ]  # most time-lagged variable V(t-tau*D) goes from data[0:length]. V(t) goes from data[tau*D:length+tau*D]
-    #                 used_Voltage_train = loaded_V[: train_timestep_end - 1000 + tau * D]
-    #                 used_Current_train = loaded_I[: train_timestep_end - 1000 + tau * D]
-    #                 testing_times = (
-    #                     loaded_t[train_timestep_end:total_num_timesteps_in_data]
-    #                 )[bias : bias + PreLength]
-    #                 used_Voltage_test = (
-    #                     loaded_V[train_timestep_end:total_num_timesteps_in_data]
-    #                 )[bias : bias + PreLength]
-    #                 used_Current_test = (
-    #                     loaded_I[train_timestep_end:total_num_timesteps_in_data]
-    #                 )[bias : bias + PreLength]
-    #                 Voltage_pred = PredValidation[
-    #                     tau * (D - 1) + 1 : tau * (D - 1) + PreLength + 1
-    #                 ]
+    D_1000, D_100000 = [], []
+    fnn_lst_1000, fnn_lst_100000 = [], []
 
-    #                 # In[8]:
+    for i in range(len(data)):
+        if i % 2 == 0:
+            D_1000.append(data[i][0])
+            fnn_lst_1000.append(data[i][1])
+        else:
+            D_100000.append(data[i][0])
+            fnn_lst_100000.append(data[i][1])
 
-    #                 # Prediction and Truth Plotting
-    #                 save_utilities.save_text(
-    #                     data=Pdata[bias : bias + PreLength],
-    #                     a_str=save_and_or_display,
-    #                     save_location=directory_to_store_txt_data
-    #                     + "prediction_and_truth/"
-    #                     + title
-    #                     + "_voltage_truth.txt",
-    #                 )
-    #                 save_utilities.save_text(
-    #                     data=Voltage_pred,
-    #                     a_str=save_and_or_display,
-    #                     save_location=directory_to_store_txt_data
-    #                     + "prediction_and_truth/"
-    #                     + title
-    #                     + "_voltage_prediction.txt",
-    #                 )
-    #                 save_utilities.save_text(
-    #                     data=X,
-    #                     a_str=save_and_or_display,
-    #                     save_location=directory_to_store_txt_data
-    #                     + "prediction_and_truth/"
-    #                     + title
-    #                     + "_time.txt",
-    #                 )
-
-    #                 # Coefficient Plotting
-    #                 plotting_utilities.plotting_quantity(
-    #                     x_arr=range(len(np.sort(DDF.W))),
-    #                     y_arr=np.sort(DDF.W),
-    #                     title="RBF Coefficients (Sorted)",
-    #                     xlabel="Index (Sorted)",
-    #                     ylabel="RBF Coefficient Value",
-    #                     save_and_or_display=save_and_or_display,
-    #                     save_location=directory_to_store_plots
-    #                     + "weights/"
-    #                     + title
-    #                     + "_RBF_Coefficients_(Sorted).png",
-    #                 )
-    #                 save_utilities.save_text(
-    #                     data=np.sort(DDF.W),
-    #                     a_str=save_and_or_display,
-    #                     save_location=directory_to_store_txt_data
-    #                     + "weights/"
-    #                     + title
-    #                     + "_RBF_Coefficients_(Sorted).txt",
-    #                 )
-
-    #                 plotting_utilities.plotting_quantity(
-    #                     x_arr=range(len(DDF.W)),
-    #                     y_arr=DDF.W,
-    #                     title="RBF Coefficients (Unsorted)",
-    #                     xlabel="Index (Unsorted)",
-    #                     ylabel="RBF Coefficient Value",
-    #                     save_and_or_display=save_and_or_display,
-    #                     save_location=directory_to_store_plots
-    #                     + "weights/"
-    #                     + title
-    #                     + "_RBF_Coefficients_(Unsorted).png",
-    #                 )
-    #                 save_utilities.save_text(
-    #                     data=DDF.W,
-    #                     a_str=save_and_or_display,
-    #                     save_location=directory_to_store_txt_data
-    #                     + "weights/"
-    #                     + title
-    #                     + "_RBF_Coefficients_(Unsorted).txt",
-    #                 )
-
-    #                 plotting_utilities.plotting_quantity(
-    #                     x_arr=range(len(np.sort(Center[:, 0]))),
-    #                     y_arr=np.sort(Center[:, 0]),
-    #                     title="Centers",
-    #                     xlabel="Sorted centers index",
-    #                     ylabel="Voltage (" + str(Voltage_units) + ")",
-    #                     save_and_or_display=save_and_or_display,
-    #                     save_location=directory_to_store_plots
-    #                     + "centers/"
-    #                     + title
-    #                     + "_Sorted_centers_vs_index.png",
-    #                 )
-    #                 save_utilities.save_text(
-    #                     data=np.sort(Center[:, 0]),
-    #                     a_str=save_and_or_display,
-    #                     save_location=directory_to_store_txt_data
-    #                     + "centers/"
-    #                     + title
-    #                     + "_Sorted_centers_vs_index.txt",
-    #                 )
-
-    #                 plt.figure()
-    #                 plt.scatter(Center[:, 0], DDF.W[:-1])
-    #                 plt.title("Weight as a function of center voltage")
-    #                 plt.xlabel("Center voltage (" + str(Voltage_units) + ")")
-    #                 plt.ylabel("Weight (Coeff of RBF)")
-    #                 plt.savefig(
-    #                     directory_to_store_plots
-    #                     + "weights/"
-    #                     + title
-    #                     + "Weight(center_voltage).png"
-    #                 )
-    #                 if "display" in save_and_or_display:
-    #                     plt.show()
-    #                 if "display" not in save_and_or_display:
-    #                     plt.close("all")
-    #                 save_utilities.save_text(
-    #                     data=np.column_stack((Center[:, 0], DDF.W[:-1])),
-    #                     a_str=save_and_or_display,
-    #                     save_location=directory_to_store_txt_data
-    #                     + "weights/"
-    #                     + title
-    #                     + "_Weight(center_voltage).txt",
-    #                 )
-
-    #                 # ========= Dawei Li's Convolution Spiking MSE Code ===============
-    #                 # simpling frequency: 50kHz, step size: 0.02ms
-    #                 # range of sigma_G
-    #                 sigma_list = np.array([20, 50, 100, 150, 200, 300])
-    #                 cost_list = []
-    #                 for sigma_convolution in sigma_list:
-    #                     # sigma_convolution = 200
-    #                     predict_conv = gaussian_filter1d(
-    #                         Voltage_pred, sigma_convolution, truncate=2
-    #                     )
-    #                     true_conv = gaussian_filter1d(
-    #                         used_Voltage_test, sigma_convolution, truncate=2
-    #                     )
-    #                     fig = plt.figure()
-    #                     ax = fig.add_subplot(111)
-    #                     ax.plot(X, true_conv, label="True Voltage", color="black")
-    #                     ax.plot(X, predict_conv, "r--", label="Prediction")
-    #                     ax.set_title(
-    #                         "Convolved V(t) for Sigma=" + str(sigma_convolution)
-    #                     )
-    #                     ax.set_xlabel("Time (" + str(Time_units) + ")")
-    #                     ax.set_ylabel("Convolved Voltage (" + str(Voltage_units) + ")")
-    #                     # if "current" in title.lower():
-    #                     #     ax.get_lines()[0].set_color("orange")
-    #                     # if "voltage" in title.lower():
-    #                     #     ax.get_lines()[0].set_color("blue")
-    #                     plt.xlim((12.5, 13.5))
-    #                     save_utilities.save_and_or_display_plot(
-    #                         fig,
-    #                         "save",
-    #                         directory_to_store_plots
-    #                         + "convolution_MSE_metric/"
-    #                         + title
-    #                         + "_Convolved_waveforms_sigma="
-    #                         + str(sigma_convolution)
-    #                         + ".png",
-    #                     )
-    #                     plt.close(fig)
-    #                     cost_list.append(
-    #                         (np.sum((predict_conv - true_conv) ** 2))
-    #                         / len(PredValidation)
-    #                     )
-    #                 # convert the unit of sigma_G from step to ms
-    #                 sigma_range_in_ms = np.array(sigma_list) * TT
-
-    #                 fig2 = plt.figure()
-    #                 ax = fig2.add_subplot(111)
-    #                 ax.plot(sigma_range_in_ms, cost_list, linewidth=2)
-    #                 ax.set_title("Convolved V(t) for Sigma=" + str(sigma_convolution))
-    #                 ax.set_xlabel(r"$\sigma_G$(" + str(Time_units) + ")")
-    #                 ax.set_ylabel(r"cost value(mV$^2$)")
-    #                 if "current" in title.lower():
-    #                     ax.get_lines()[0].set_color("orange")
-    #                 if "voltage" in title.lower():
-    #                     ax.get_lines()[0].set_color("blue")
-    #                 save_utilities.save_and_or_display_plot(
-    #                     fig2,
-    #                     "save",
-    #                     directory_to_store_plots
-    #                     + "convolution_MSE_metric/"
-    #                     + title
-    #                     + "_MSE_metric_vs_sigma.png",
-    #                 )
-    #                 plt.close(fig2)
+    # visualize the result
+    fig = plt.figure(figsize=(10, 10))
+    ax = plt.axes()
+    ax.set_title("FNN Ratio vs D; R=0.1; window=1000000")
+    plt.scatter(D_100000, fnn_lst_100000, c='green')
+    save_utilities.save_and_or_display_plot(fig, f"FNN_vs_D_R={R},window={window}", directory_to_store_plots+"FNN/")
+    # plt.show()
