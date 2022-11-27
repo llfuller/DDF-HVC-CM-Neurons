@@ -168,10 +168,7 @@ for a_path in full_paths_list:
         loaded_I = imported_data[:, 1]
         loaded_t = imported_data[:, 2]
     else:  # primarily .txt files
-        # if root_directory == "Data2022-50KhZ/": # TODO: Change this back when needed, read below
-        if (
-            root_directory == "Data2022-50KhZ/7-7-2022/Lilac 114/Neuron 1/"
-        ):  # This is temporary for only for evaluating the Lilac 114 Neuron1
+        if "Data2022-50KhZ/" in root_directory:
             loaded_IV = np.loadtxt(a_path)
             loaded_I = loaded_IV[:, 0]
             loaded_V = loaded_IV[:, 1]
@@ -193,8 +190,10 @@ for a_path in full_paths_list:
     for dataset_index, a_time_delay_dataset in enumerate(datasets):
         print(a_time_delay_dataset.shape)
         print(f"Saving .npy files for D={a_time_delay_dataset.shape[1]}")
-        np.save(directory_to_store_FNN_data+f"min_datapairs_D={a_time_delay_dataset.shape[1]}_window={window}_datapoints", time_delay_datapairs[dataset_index])
-        np.save(directory_to_store_FNN_data+f"min_datapairs_D={a_time_delay_dataset.shape[1]}_window={window}_location", time_delay_indices[dataset_index])
+        save_utilities.save_npy_with_makedir(time_delay_datapairs[dataset_index], directory_to_store_FNN_data+f"min_datapairs_D={a_time_delay_dataset.shape[1]}_window={window}_datapoints")
+        save_utilities.save_npy_with_makedir(time_delay_indices[dataset_index],   directory_to_store_FNN_data+f"min_datapairs_D={a_time_delay_dataset.shape[1]}_window={window}_location")
+        # np.save(directory_to_store_FNN_data+f"min_datapairs_D={a_time_delay_dataset.shape[1]}_window={window}_datapoints", time_delay_datapairs[dataset_index])
+        # np.save(directory_to_store_FNN_data+f"min_datapairs_D={a_time_delay_dataset.shape[1]}_window={window}_location", time_delay_indices[dataset_index])
 
     #data_derived/" + directory_to_read_input_data +
     """User Defined Parameters: specify root path for loaded files"""
@@ -207,11 +206,13 @@ for a_path in full_paths_list:
     D_data_dict, D_index_dict = {}, {}
 
     try:
-        os.listdir(root)
+        os.listdir(directory_to_store_FNN_data)
     except:
-        root = "FNN/"
+        root = directory_to_store_FNN_data
 
     for filepath in os.listdir(root):
+        print("found directories:\n")
+        print(filepath)
         if 'min_datapairs' not in filepath:
             continue
         # print(filepath)
@@ -219,16 +220,15 @@ for a_path in full_paths_list:
         window_size = int(re.search("window=([0-9]*)", filepath).group(1))
         data = True if re.search("datapoints", filepath) else False
         if data:
-            D_data_dict[(D, window_size)] = np.load(root+filepath)
+            D_data_dict[(D, window_size)] = np.load(root+filepath, allow_pickle=True)
         else:
-            D_index_dict[(D, window_size)] = np.load(root+filepath)
-
+            D_index_dict[(D, window_size)] = np.load(root+filepath, allow_pickle=True)
 
     # evaluate each dataset's FNN ratio with different R values
     D_results = collections.defaultdict(list)  # list of fnn ratios for each (D, window_size combo)
     exp = np.concatenate(
         [np.arange(5, 1, -1), np.array([0]), np.arange(-1, -5, -1)])  # array([ 5,  4,  3,  2, -1, -2, -3, -4])
-    for (d, window), d_data in tqdm(D_data_dict.items()):
+    for (d, window), d_data in tqdm.tqdm(D_data_dict.items()):
         for e in exp:
             R = float(f'1e{e}')
             fnn_ratio = fnn.count_fnn(D_index_dict[(d, window)], d_data, threshold_R=R)
@@ -249,11 +249,11 @@ for a_path in full_paths_list:
 
     # plot fnn vs R for each D
     window = 1000
-    r, c = 5, len(D_1000) // 4
+    r, c = 5, len(D_100000) // 4
     fig, axes = plt.subplots(r, c, figsize=(18, 14))
     fig.tight_layout(pad=3.0)
     r_i, c_i = 0, 0
-    for d, fnn_data in D_1000.items():
+    for d, fnn_data in D_100000.items():
         axes[r_i, c_i].set_title(f'D={d}, window={window}')
         axes[r_i, c_i].set_xlabel("R's Exponents")
         axes[r_i, c_i].set_ylabel("FNN Ratio")
