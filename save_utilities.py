@@ -38,9 +38,9 @@ def save_txt_with_makedir(data, save_location):
         print("Saving: "+str(directory + str(filename)))
         np.savetxt(directory + str(filename), data)
 
-def save_dict_with_makedir(data, save_location):
+def save_npy_with_makedir(data, save_location):
     """
-    input: dictionary data, and string "save_location" (example: directory1/directory2/..../filename.ext)
+    input: npy data, and string "save_location" (example: directory1/directory2/..../filename.ext)
     Creates all directories within save_location if they don't yet exist, then saves data to save_location
     """
     if "/" in save_location:
@@ -51,7 +51,6 @@ def save_dict_with_makedir(data, save_location):
         print("Creating "+str(directory))
         os.makedirs(directory)
     if os.path.isdir(directory):
-        print("Saving to "+str(directory))
         print("Saving: "+str(directory + str(filename)))
         np.save(directory + str(filename), data)
 
