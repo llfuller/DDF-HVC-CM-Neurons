@@ -95,7 +95,7 @@ def generate_min_dist_datapoints(data, window=1000, save_data=True):
         result_index.append(min_distance_pair_index)
 
         # early stopping for time-saving purposes
-        if i == int(round(len(data)/10)):
+        if i == int(round(len(data)/100)):
             break
 
     # for i in tqdm.tqdm(range(len(data))):

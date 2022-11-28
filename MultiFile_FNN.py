@@ -2,26 +2,15 @@
 # coding: utf-8
 
 # In[1]:
-from TimeDelay_Neuron_DDF_GaussianForm import *
-import Fourier_Power_Spectrum
-import plotting_utilities
 import save_utilities
 import numpy as np
-import time
 import matplotlib.pyplot as plt
 import random
-import copy
 import glob
-from scipy.ndimage import gaussian_filter1d
 import fnn
 import re
-import os
 import tqdm
 import collections
-
-import numpy.fft
-import math
-
 import os
 
 random.seed(2022)
@@ -38,18 +27,6 @@ np.random.seed(2022)
 # In[2]:
 # modify this
 save_and_or_display = "save"
-
-tau_arr = np.array([10])  # math notation: range(2,10) = all integers in bounds [2,9)
-D_arr = np.array(
-    [2, 5, 10, 15, 20, 25, 30, 40, 50, 60, 80, 100]
-)  # math notation: range(2,10) = all integers in bounds [2,9)
-beta_arr = np.array(
-    np.power(10.0, [-3])
-)  # range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
-R_arr = np.array(
-    np.power(10.0, [-3])
-)  # range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
-
 file_extension = "txt"  # string; examples: "atf" or "txt" (case sensitive); don't include period; lowercase
 
 # specify what the neuron names are in the file titles here:
@@ -82,6 +59,9 @@ tau = 5
 R_ratio = 1e-2
 D_arr = np.array([1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 18, 20])
 save_data = True
+
+
+
 
 # ======== do not modify below ==========
 print(
@@ -120,19 +100,12 @@ for a_path in full_paths_list:
     directory_to_read_input_data = a_path[
         : last_slash_location + 1
     ]  # should include the last slash, but nothing past it
-    directory_to_store_plots = (
-        "plots/" + directory_to_read_input_data + str(a_filename[:-4]) + "/"
-    )
-    directory_to_store_txt_data = (
-        "data_derived/" + directory_to_read_input_data + "txt_V_I_t/"
-    )
-    directory_to_store_FNN_data = (
-        "data_derived/" + directory_to_read_input_data + "FNN/"
-    )
+    directory_to_store_plots = ("plots/" + directory_to_read_input_data + str(a_filename[:-4]) + "/")
+    directory_to_store_txt_data = ("data_derived/" + directory_to_read_input_data + "txt_V_I_t/")
+    directory_to_store_FNN_data = ("data_derived/" + directory_to_read_input_data + "FNN/")
+
     neuron_name = save_utilities.give_name_if_included_in_path(a_path, neuron_name_list)
-    print(
-        "================================New File =================================================="
-    )
+    print("================================New File ==================================================")
     if a_filename in do_not_use_list:
         continue  # skip this iteration if the filename is on the do_not_use_list
     if (
@@ -172,7 +145,12 @@ for a_path in full_paths_list:
     total_num_timesteps_in_data = len(loaded_V)
     print(loaded_I.shape)
     datasets, time_delay_indices, time_delay_datapairs = fnn.run_this(loaded_I, loaded_V, loaded_t,
-                                                                      search_window_size = window)
+                                                                      search_window_size = window,
+                                                                      tau = tau,
+                                                                      R_ratio = R_ratio,
+                                                                      D_arr = D_arr,
+                                                                      save_data = save_data
+                                                                      )
 
     # datasets is a list of len(D_E_array) arrays, with shape (timesteps, D_E)
     for dataset_index, a_time_delay_dataset in enumerate(datasets):
@@ -180,8 +158,6 @@ for a_path in full_paths_list:
         print(f"Saving .npy files for D={a_time_delay_dataset.shape[1]}")
         save_utilities.save_npy_with_makedir(time_delay_datapairs[dataset_index], directory_to_store_FNN_data+f"min_datapairs_D={a_time_delay_dataset.shape[1]}_window={window}_datapoints")
         save_utilities.save_npy_with_makedir(time_delay_indices[dataset_index],   directory_to_store_FNN_data+f"min_datapairs_D={a_time_delay_dataset.shape[1]}_window={window}_location")
-        # np.save(directory_to_store_FNN_data+f"min_datapairs_D={a_time_delay_dataset.shape[1]}_window={window}_datapoints", time_delay_datapairs[dataset_index])
-        # np.save(directory_to_store_FNN_data+f"min_datapairs_D={a_time_delay_dataset.shape[1]}_window={window}_location", time_delay_indices[dataset_index])
 
     #data_derived/" + directory_to_read_input_data +
     """User Defined Parameters: specify root path for loaded files"""
@@ -212,6 +188,7 @@ for a_path in full_paths_list:
         else:
             D_index_dict[(D, window_size)] = np.load(root+filepath, allow_pickle=True)
 
+
     # evaluate each dataset's FNN ratio with different R values
     D_results = collections.defaultdict(list)  # list of fnn ratios for each (D, window_size combo)
     exp = np.concatenate(
@@ -221,6 +198,7 @@ for a_path in full_paths_list:
             R = float(f'1e{e}')
             fnn_ratio = fnn.count_fnn(D_index_dict[(d, window)], d_data, threshold_R=R)
             D_results[(d, window)].append(fnn_ratio)
+
 
     # divide the graph into two plots by windows, and sort by D values
     D_100000 = {}
@@ -238,7 +216,7 @@ for a_path in full_paths_list:
     """
     plot fnn vs R for each D
     """
-    window = 1000
+    window = 100000
     r, c = 5, len(D_100000) // 4
     fig, axes = plt.subplots(r, c, figsize=(18, 14))
     fig.tight_layout(pad=3.0)
@@ -265,12 +243,12 @@ for a_path in full_paths_list:
     fnn_lst_1000, fnn_lst_100000 = [], []
 
     for i in range(len(data)):
-        if i % 2 == 0:
-            D_1000.append(data[i][0])
-            fnn_lst_1000.append(data[i][1])
-        else:
-            D_100000.append(data[i][0])
-            fnn_lst_100000.append(data[i][1])
+        # if i % 2 == 0:
+        #     D_1000.append(data[i][0])
+        #     fnn_lst_1000.append(data[i][1])
+        # else:
+        D_100000.append(data[i][0])
+        fnn_lst_100000.append(data[i][1])
 
     """
     Save plot
@@ -280,5 +258,5 @@ for a_path in full_paths_list:
     ax.set_title("FNN Ratio vs D; R=0.1; window=100000")
     plt.scatter(D_100000, fnn_lst_100000, c='green')
     save_utilities.save_fig_with_makedir(figure=fig,
-                                         save_location=f"{directory_to_store_plots}FNN/FNN_vs_D_R={R},window={window}.png")
-    # plt.show()
+                                         save_location=f"{directory_to_store_plots}FNN/FNN_vs_D_R={R},"
+                                                       f"window={window}.png")
