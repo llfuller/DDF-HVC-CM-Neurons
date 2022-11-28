@@ -28,18 +28,16 @@ random.seed(2022)
 np.random.seed(2022)
 
 # This code is an edit branching off of Python code
-# "User Side Code Separate Train and Test Same Epoch Different CM Auto File Loop"
-# on June 6, 2022. I'm using new function definitions to make this file a cleaned up version of that file.
+# "MultiFile_FPS_Plot_and_Train_Test_RBF.py"
+# This code also contains segments from fnn.py written by Barry Xue, central to this script.
+# on Nov 27, 2022. Uses the basic file iteration
+# FNN code written by Barry Xue provides the core functionality,
+# MultiFile code written by Lawson Fuller helps integrate it into existing file directory systems to make iterating over
+# existing data easier.
 
 # In[2]:
 # modify this
 save_and_or_display = "save"
-
-# epoch = None # also called "episode". set to None if not specified
-# tau_arr = np.array([20,30,40])#np.array(range(10, 20)) # math notation: range(2,10) = all integers in bounds [2,9)
-# D_arr = np.array([5,7,9])#np.array(range(2, 10)) # math notation: range(2,10) = all integers in bounds [2,9)
-# beta_arr = np.array(np.power(10.0,[-6,-5,-4,-3]))#np.array(np.power(10.0,range(-3,3))) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
-# R_arr = np.array(np.power(10.0,[-6,-5,-4,-3])) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
 
 tau_arr = np.array([10])  # math notation: range(2,10) = all integers in bounds [2,9)
 D_arr = np.array(
@@ -64,15 +62,11 @@ Time_units = "ms"
 TT = 0.02  # delta t in Time_units units, time between samples if not specified through loaded files
 
 # Data directory to recursively load data from:
-root_directory = "Data2022-50KhZ/7-7-2022/Lilac 114/Neuron 1/"  # example: "HVC_biocm_data/simulations/" ; Include the final "/"
+root_directory = "Data2022-50KhZ/7-7-2022/"  # example: "HVC_biocm_data/simulations/" ; Include the final "/"
 
 # Use only this file:
 files_to_evaluate = [
-    # "7-7-2022/Lilac 114/Neuron 1/epoch_1.txt",
-    # "7-7-2022/Lilac 114/Neuron 1/epoch_2.txt",
-    # "7-7-2022/Lilac 114/Neuron 1/epoch_3.txt",
-    # "7-7-2022/Lilac 114/Neuron 1/epoch_4.txt",
-    "epoch_1.txt"
+    # "epoch_1.txt"
 ]  # "biocm_phasic_lzo_1_1_10_100_200.mat"] # leave this list empty if you want to evaluate all files in root_directory recursively
 
 do_not_use_list = (
@@ -86,10 +80,8 @@ fraction_of_data_for_training = 4.0 / 6.0
 window = 100000 # number of timesteps to either side to consider when looking for nearest neighbors, ex: 5 => 10 total.
 tau = 5
 R_ratio = 1e-2
-D_arr = np.array([1, 2, 4, 6, 8, 10, 12, 15, 18, 20])
+D_arr = np.array([1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 18, 20])
 save_data = True
-
-# In[3]:
 
 # ======== do not modify below ==========
 print(
@@ -121,10 +113,6 @@ for a_path in full_paths_list:
             "voltage" in a_path.lower()
         ):  # skip files if 'voltage' in filename. Only need to perform rest of this loop when 'current' in filename, to avoid duplicating work.
             continue
-    # if "epoch_5" not in a_path:
-    #     continue
-    # if "Neuron 2" not in a_path:
-    #     continue
     last_slash_location = a_path.rfind("/")
     a_filename = a_path[last_slash_location + 1 :]
     if len(files_to_evaluate) > 0 and a_filename not in files_to_evaluate:
@@ -247,7 +235,9 @@ for a_path in full_paths_list:
     D_1000 = dict(sorted(D_1000.items(), key=lambda x: x[0]))
     D_100000 = dict(sorted(D_100000.items(), key=lambda x: x[0]))
 
-    # plot fnn vs R for each D
+    """
+    plot fnn vs R for each D
+    """
     window = 1000
     r, c = 5, len(D_100000) // 4
     fig, axes = plt.subplots(r, c, figsize=(18, 14))
@@ -282,10 +272,13 @@ for a_path in full_paths_list:
             D_100000.append(data[i][0])
             fnn_lst_100000.append(data[i][1])
 
-    # visualize the result
+    """
+    Save plot
+    """
     fig = plt.figure(figsize=(10, 10))
     ax = plt.axes()
-    ax.set_title("FNN Ratio vs D; R=0.1; window=1000000")
+    ax.set_title("FNN Ratio vs D; R=0.1; window=100000")
     plt.scatter(D_100000, fnn_lst_100000, c='green')
-    save_utilities.save_and_or_display_plot(fig, f"FNN_vs_D_R={R},window={window}", directory_to_store_plots+"FNN/")
+    save_utilities.save_fig_with_makedir(figure=fig,
+                                         save_location=f"{directory_to_store_plots}FNN/FNN_vs_D_R={R},window={window}.png")
     # plt.show()
