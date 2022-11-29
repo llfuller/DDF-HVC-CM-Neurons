@@ -215,7 +215,7 @@ for a_path in full_paths_list:
     r_i, c_i = 0, 0
     for d, fnn_data in D_results_sorted.items():
         axes[r_i, c_i].set_title(f'D={d}, window={window}')
-        axes[r_i, c_i].set_xlabel("R's Exponents")
+        axes[r_i, c_i].set_xlabel("log_10(R)")
         axes[r_i, c_i].set_ylabel("FNN Ratio")
         axes[r_i, c_i].scatter(exp, fnn_data)
         c_i += 1
@@ -239,6 +239,8 @@ for a_path in full_paths_list:
     fig = plt.figure(figsize=(10, 10))
     ax = plt.axes()
     ax.set_title("FNN Ratio vs D; R=0.1; window=100000")
+    ax.set_xlabel("D_E")
+    ax.set_ylabel("FNN Ratio")
     plt.scatter(Ds, fnn_lst, c='green')
     save_utilities.save_fig_with_makedir(figure=fig,
                                          save_location=f"{directory_to_store_plots}FNN/FNN_vs_D_R={R},"
