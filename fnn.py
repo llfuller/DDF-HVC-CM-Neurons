@@ -30,18 +30,32 @@ def count_fnn(dataset, threshold_R=1e-1):
     Return:
     A floating point number indicating the number of false nearest neighbors in the dataset.
     """
-    tnn, fnn = 0, 0
-    for vec1, vec2 in dataset:
-        true1, true2 = vec1[0], vec2[0]# the first value of each array are the true voltage value
-        time_dist = np.linalg.norm(vec1 - vec2, ord=2) # time delay distance between the two points
-        actual_dist = np.abs(true1 - true2) # actual distance
-        dist_ratio = actual_dist / time_dist
+    device = torch.device('cuda:0') if torch.cuda.is_available() else torch.device('cpu')
+    dataset_tensor = torch.stack([torch.stack(tuple(pairs)) for pairs in dataset]).to(device)
+    true_tensor = dataset_tensor[:, :, 0].to(device)
 
-        if dist_ratio <= threshold_R: # determine falsehood
-            tnn += 1
-        else:
-            fnn += 1
-    return fnn / (fnn+tnn)
+    time_dist = torch.norm((dataset_tensor[:, 0, :] - dataset_tensor[:, 1, :]).float(), p=2, dim=1)
+    actual_dist = torch.abs((true_tensor[:, 0]-true_tensor[:, 1]))
+    dist_ratio = actual_dist/time_dist
+
+    fnn = torch.sum((dist_ratio > threshold_R))
+    tnn = torch.sum((dist_ratio <= threshold_R))
+
+    return (fnn / (fnn+tnn)).cpu()
+
+    # tnn, fnn = 0, 0
+    # for vec1, vec2 in dataset:
+    #     true1, true2 = vec1[0], vec2[0]# the first value of each array are the true voltage value
+    #     time_dist = np.linalg.norm(vec1 - vec2, ord=2) # time delay distance between the two points
+    #     actual_dist = np.abs(true1 - true2) # actual distance
+    #     dist_ratio = actual_dist / time_dist
+
+    #     if dist_ratio <= threshold_R: # determine falsehood
+    #         tnn += 1
+    #     else:
+    #         fnn += 1
+    # return fnn / (fnn+tnn)
+
 
 
 def generate_min_dist_datapoints(data, window=1000, save_data=True):
@@ -52,16 +66,21 @@ def generate_min_dist_datapoints(data, window=1000, save_data=True):
 
         # create a window of data point to search over
         # save the starting index and the ending index of our window as reference
-        start_index, end_index = i-window, i+window#max(i-window, 0), min(len(data), i+window)
+
+        start_index, end_index = max(i-window, 0), min(len(data), i+window) # non-cyclic
+        # start_index, end_index = i-window, i+window # cyclic
 
         # exclude the target point from the window
         search_window = torch.cat([
-            data[(start_index<0)*start_index:0],
-            data[(start_index<0)*0+(start_index>=0)*start_index:i],
-            data[i+1:end_index*(end_index<data.shape[0]) + data.shape[0]*(end_index>=data.shape[0])],
-            data[0:(end_index-data.shape[0])*(end_index>=data.shape[0])]
-        ])
-        # print(search_window)
+            data[start_index:i],
+            data[i+1:end_index],
+        ]) # non-cyclic
+        # search_window = torch.cat([
+        #     data[(start_index<0)*start_index:0],
+        #     data[(start_index<0)*0+(start_index>=0)*start_index:i],
+        #     data[i+1:end_index*(end_index<data.shape[0]) + data.shape[0]*(end_index>=data.shape[0])],
+        #     data[0:(end_index-data.shape[0])*(end_index>=data.shape[0])]
+        # ]) # cyclic
 
         # run the distance calculation and find the closest point and their indices
         # print(f"data[i] is {data[i].shape}")
@@ -74,19 +93,23 @@ def generate_min_dist_datapoints(data, window=1000, save_data=True):
         min_distance_pair_data = [(data[i].data).cpu(), (search_window[min_distance_index].data).cpu()]
 
         # find the real index in respect to the entire dataset
-        real_min_distance_index = None#start_index + min_distance_index + 1 if start_index + min_distance_index >= i else start_index + min_distance_index
-        if start_index + min_distance_index < 0:
-            real_min_distance_index = data.shape[0] + (start_index + min_distance_index)
-        elif (start_index + min_distance_index) >= 0:
-            if (start_index + min_distance_index) < i:
-                real_min_distance_index = start_index + min_distance_index
-            if (start_index + min_distance_index) >= i:
-                if (start_index + min_distance_index) + 1 < data.shape[0]:
-                    real_min_distance_index = start_index + min_distance_index + 1
-                if (start_index + min_distance_index) + 1 >= data.shape[0]:
-                    real_min_distance_index = start_index + min_distance_index + 1 - data.shape[0]
-        else:
-            print(f"Failed to match any case: (start_index + min_distance_index)={(start_index + min_distance_index)} and i={i}")
+
+        """Cyclic Approach"""
+        # real_min_distance_index = None
+        # if start_index + min_distance_index < 0:
+        #     real_min_distance_index = data.shape[0] + (start_index + min_distance_index)
+        # elif (start_index + min_distance_index) >= 0:
+        #     if (start_index + min_distance_index) < i:
+        #         real_min_distance_index = start_index + min_distance_index
+        #     if (start_index + min_distance_index) >= i:
+        #         if (start_index + min_distance_index) + 1 < data.shape[0]:
+        #             real_min_distance_index = start_index + min_distance_index + 1
+        #         if (start_index + min_distance_index) + 1 >= data.shape[0]:
+        #             real_min_distance_index = start_index + min_distance_index + 1 - data.shape[0]
+        # else:
+        #     print(f"Failed to match any case: (start_index + min_distance_index)={(start_index + min_distance_index)} and i={i}")
+        """Non-Cyclic Approach"""
+        real_min_distance_index = start_index + min_distance_index + 1 if start_index + min_distance_index >= i else start_index + min_distance_index
         min_distance_pair_index = [i, (real_min_distance_index.data).cpu()]
 
         # save the closest point's index
@@ -124,7 +147,7 @@ def generate_min_dist_datasets(filepath, time_delay_datasets, tau=5, R_ratio=1e-
         # second dimension of the thing is dimension D_E for datasets, and 2 for time_delay_indices or time_delay_datapairs
     """
     # change the data from array to tensor for faster calculation
-    device = torch.device('cuda:0') # change device index
+    device = torch.device('cuda:0') if torch.cuda.is_available() else torch.device('cpu') # change device index
     time_delay_datasets = [(torch.tensor(arr)).to(device) for arr in time_delay_datasets]
 
     # calculate the min distance result (test) - window=200 will run for 20 mins
@@ -139,35 +162,35 @@ def generate_min_dist_datasets(filepath, time_delay_datasets, tau=5, R_ratio=1e-
     return time_delay_datasets, time_delay_indices, time_delay_datapairs
 
 
-def count_fnn(index, dataset, threshold_R=1e-2):
-    """
-    Parameters:
-    dataset: A dataset should contain all the points and their closest point in pairs;
-    example [(point_vec1, point_vec2)_1, (point_vec1, point_vec2)_2, ...]
+# def count_fnn(index, dataset, threshold_R=1e-2):
+#     """
+#     Parameters:
+#     dataset: A dataset should contain all the points and their closest point in pairs;
+#     example [(point_vec1, point_vec2)_1, (point_vec1, point_vec2)_2, ...]
 
-    threshold_R: This threshold determines ratio needed between the actual distance and
-    the time delay distance to be recognized as a true nearest neighbor
+#     threshold_R: This threshold determines ratio needed between the actual distance and
+#     the time delay distance to be recognized as a true nearest neighbor
 
-    Return:
-    A floating point number indicating the number of false nearest neighbors in the dataset.
-    """
-    counter = 0
-    tnn, fnn = 0, 0
-    for i in range(index.shape[0]):
-        td1, td2 = dataset[i]  # time delay vectors
-        true1, true2 = td1[0], td2[0]  # the first value of each time delay vectors are the true voltage value
-        time_dist = np.linalg.norm(td1 - td2, ord=2)  # time delay distance between the two points
-        actual_dist = np.abs(true1 - true2)  # actual distance
-        dist_ratio = actual_dist / time_dist
+#     Return:
+#     A floating point number indicating the number of false nearest neighbors in the dataset.
+#     """
+#     counter = 0
+#     tnn, fnn = 0, 0
+#     for i in range(index.shape[0]):
+#         td1, td2 = dataset[i]  # time delay vectors
+#         true1, true2 = td1[0], td2[0]  # the first value of each time delay vectors are the true voltage value
+#         time_dist = np.linalg.norm(td1 - td2, ord=2)  # time delay distance between the two points
+#         actual_dist = np.abs(true1 - true2)  # actual distance
+#         dist_ratio = actual_dist / time_dist
 
-        # dist_ratio = actual_dist / time_dist if time_dist != 0 else 0
-        if dist_ratio <= threshold_R:  # determine falsehood
-            tnn += 1
-        else:
-            fnn += 1
-        counter += 1
+#         # dist_ratio = actual_dist / time_dist if time_dist != 0 else 0
+#         if dist_ratio <= threshold_R:  # determine falsehood
+#             tnn += 1
+#         else:
+#             fnn += 1
+#         counter += 1
 
-    return fnn / (fnn + tnn)
+#     return fnn / (fnn + tnn)
 
 
 def run_this(loaded_I, loaded_V, loaded_t,

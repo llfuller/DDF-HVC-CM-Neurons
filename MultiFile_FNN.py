@@ -193,35 +193,27 @@ for a_path in full_paths_list:
     D_results = collections.defaultdict(list)  # list of fnn ratios for each (D, window_size combo)
     exp = np.concatenate(
         [np.arange(5, 1, -1), np.array([0]), np.arange(-1, -5, -1)])  # array([ 5,  4,  3,  2, -1, -2, -3, -4])
+
+    print("Start to Count FNN")
     for (d, window), d_data in tqdm.tqdm(D_data_dict.items()):
         for e in exp:
             R = float(f'1e{e}')
-            fnn_ratio = fnn.count_fnn(D_index_dict[(d, window)], d_data, threshold_R=R)
+            fnn_ratio = fnn.count_fnn(d_data, threshold_R=R)
             D_results[(d, window)].append(fnn_ratio)
 
 
-    # divide the graph into two plots by windows, and sort by D values
-    D_100000 = {}
-    D_1000 = {}
-
-    for (d, window_size), lst in D_results.items():
-        if window_size == 1000:
-            D_1000[d] = lst
-        if window_size == 100000:
-            D_100000[d] = lst
-
-    D_1000 = dict(sorted(D_1000.items(), key=lambda x: x[0]))
-    D_100000 = dict(sorted(D_100000.items(), key=lambda x: x[0]))
+    # sort by D values
+    D_results_sorted = dict(sorted(D_results.items(), key=lambda x: x[0]))
 
     """
     plot fnn vs R for each D
     """
-    window = 100000
-    r, c = 5, len(D_100000) // 4
+    window = list(D_results_sorted.keys())[0][1]
+    r, c = 5, len(D_results_sorted) // 4
     fig, axes = plt.subplots(r, c, figsize=(18, 14))
     fig.tight_layout(pad=3.0)
     r_i, c_i = 0, 0
-    for d, fnn_data in D_100000.items():
+    for d, fnn_data in D_results_sorted.items():
         axes[r_i, c_i].set_title(f'D={d}, window={window}')
         axes[r_i, c_i].set_xlabel("R's Exponents")
         axes[r_i, c_i].set_ylabel("FNN Ratio")
@@ -232,23 +224,14 @@ for a_path in full_paths_list:
             r_i += 1
 
 
+    # get fnn for R=0.1 for all D values
     data = []
     for (d, window), fnn_data in D_results.items():
-        data.append((d, fnn_data[4]))  # get fnn for R's exponent is -1 for all D values
-
-    # extra sorting step because the order for D is weird
+        data.append((d, fnn_data[4]))
     data = sorted(data, key=lambda x: x[0])
 
-    D_1000, D_100000 = [], []
-    fnn_lst_1000, fnn_lst_100000 = [], []
-
-    for i in range(len(data)):
-        # if i % 2 == 0:
-        #     D_1000.append(data[i][0])
-        #     fnn_lst_1000.append(data[i][1])
-        # else:
-        D_100000.append(data[i][0])
-        fnn_lst_100000.append(data[i][1])
+    Ds= [i[0] for i in data]
+    fnn_lst = [i[1] for i in data]
 
     """
     Save plot
@@ -256,7 +239,7 @@ for a_path in full_paths_list:
     fig = plt.figure(figsize=(10, 10))
     ax = plt.axes()
     ax.set_title("FNN Ratio vs D; R=0.1; window=100000")
-    plt.scatter(D_100000, fnn_lst_100000, c='green')
+    plt.scatter(Ds, fnn_lst, c='green')
     save_utilities.save_fig_with_makedir(figure=fig,
                                          save_location=f"{directory_to_store_plots}FNN/FNN_vs_D_R={R},"
                                                        f"window={window}.png")
