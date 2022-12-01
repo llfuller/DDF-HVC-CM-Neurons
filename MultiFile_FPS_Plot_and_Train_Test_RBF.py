@@ -31,10 +31,10 @@ np.random.seed(2022)
 save_and_or_display = "save"
 
 # epoch = None # also called "episode". set to None if not specified
-tau_arr = np.array([20,30,40])#np.array(range(10, 20)) # math notation: range(2,10) = all integers in bounds [2,9)
-D_arr = np.array([5,7,9])#np.array(range(2, 10)) # math notation: range(2,10) = all integers in bounds [2,9)
-beta_arr = np.array(np.power(10.0,[-6,-5,-4,-3]))#np.array(np.power(10.0,range(-3,3))) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
-R_arr = np.array(np.power(10.0,[-6,-5,-4,-3])) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+tau_arr = np.array([10,20,30,40])#np.array(range(10, 20)) # math notation: range(2,10) = all integers in bounds [2,9)
+D_arr = np.array([3,5,7,9,12,15])#np.array(range(2, 10)) # math notation: range(2,10) = all integers in bounds [2,9)
+beta_arr = np.array(np.power(10.0,[-6,-5,-4,-3, -2]))#np.array(np.power(10.0,range(-3,3))) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+R_arr = np.array(np.power(10.0,[-6,-5,-4,-3, -2])) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
 file_extension = "txt" # string; examples: "atf" or "txt" (case sensitive); don't include period; lowercase
 
 # specify what the neuron names are in the file titles here:
@@ -46,7 +46,7 @@ Time_units = "ms"
 TT = 0.02 # delta t in Time_units units, time between samples if not specified through loaded files
 
 # Data directory to recursively load data from:
-root_directory = "Data2022-50KhZ/" # example: "HVC_biocm_data/simulations/" ; Include the final "/"
+root_directory = "Data2022-50KhZ/11-30-2022/" # example: "HVC_biocm_data/simulations/" ; Include the final "/"
 
 # Use only this file:
 files_to_evaluate = []#"biocm_phasic_lzo_1_1_10_100_200.mat"] # leave this list empty if you want to evaluate all files in root_directory recursively
@@ -109,7 +109,7 @@ for a_path in full_paths_list:
         loaded_I = imported_data[:, 1]
         loaded_t = imported_data[:, 2]
     else: # primarily .txt files
-        if root_directory=="Data2022-50KhZ/":
+        if "Data2022-50KhZ/" in root_directory:
             loaded_IV = np.loadtxt(a_path)
             loaded_I = loaded_IV[:, 0]
             loaded_V = loaded_IV[:, 1]
