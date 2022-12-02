@@ -30,16 +30,14 @@ save_and_or_display = "save"
 file_extension = "txt"  # string; examples: "atf" or "txt" (case sensitive); don't include period; lowercase
 
 # specify what the neuron names are in the file titles here:
-neuron_name_list = [
-    "Lilac 114 Neuron 1"
-]  # example: ['32425a75', '920061fe'] are two CM neurons from Meliza's 2014 data
+neuron_name_list = []  # example: ['32425a75', '920061fe'] are two CM neurons from Meliza's 2014 data
 Current_units = "pA"
 Voltage_units = "mV"
 Time_units = "ms"
 TT = 0.02  # delta t in Time_units units, time between samples if not specified through loaded files
 
 # Data directory to recursively load data from:
-root_directory = "Data2022-50KhZ/7-7-2022/"  # example: "HVC_biocm_data/simulations/" ; Include the final "/"
+root_directory = "Data2022-50KhZ/11-30-2022/"  # example: "HVC_biocm_data/simulations/" ; Include the final "/"
 
 # Use only this file:
 files_to_evaluate = [
@@ -232,6 +230,9 @@ for a_path in full_paths_list:
 
     Ds= [i[0] for i in data]
     fnn_lst = [i[1] for i in data]
+    print("Length of Ds and Ds itself")
+    print(len(Ds))
+    print(Ds)
 
     """
     Save plot
@@ -245,3 +246,8 @@ for a_path in full_paths_list:
     save_utilities.save_fig_with_makedir(figure=fig,
                                          save_location=f"{directory_to_store_plots}FNN/FNN_vs_D_R={R},"
                                                        f"window={window}.png")
+    plotted_data_arr = np.stack((Ds, fnn_lst),axis=-1)
+    save_utilities.save_text(data=plotted_data_arr,
+                             a_str="save",
+                             save_location=f"{directory_to_store_txt_data}FNN/FNN_vs_D_R={R},"
+                                                       f"window={window}.txt")

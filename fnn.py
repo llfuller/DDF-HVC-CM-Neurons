@@ -118,7 +118,7 @@ def generate_min_dist_datapoints(data, window=1000, save_data=True):
         result_index.append(min_distance_pair_index)
 
         # early stopping for time-saving purposes
-        if i == int(round(len(data)/100)):
+        if i == int(round(len(data)/1000)):
             break
 
     # for i in tqdm.tqdm(range(len(data))):
@@ -232,7 +232,7 @@ def run_this(loaded_I, loaded_V, loaded_t,
     start = time.time()
     time_delay_datasets = []
     for d in D_arr:
-        V_s = np.dstack([np.concatenate([V_0[-i*tau:, :], V_0[:-i*tau, :]], axis=0) for i in range(d+1)])[:, 0, :]
+        V_s = np.dstack([np.concatenate([V_0[-i*tau:, :], V_0[:-i*tau, :]], axis=0) for i in range(d)])[:, 0, :]
         time_delay_datasets.append(V_s)
         # print(f"Length of time delay data appended: {V_s.shape}")
     end = time.time()
