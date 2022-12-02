@@ -31,10 +31,10 @@ np.random.seed(2022)
 save_and_or_display = "save"
 
 # epoch = None # also called "episode". set to None if not specified
-tau_arr = np.array([10,20,30,40])#np.array(range(10, 20)) # math notation: range(2,10) = all integers in bounds [2,9)
-D_arr = np.array([3,5,7,9,12,15])#np.array(range(2, 10)) # math notation: range(2,10) = all integers in bounds [2,9)
+tau_arr = np.array([10,20,30,500])#np.array(range(10, 20)) # math notation: range(2,10) = all integers in bounds [2,9)
+D_arr = np.array([5,6,7,8])#np.array(range(2, 10)) # math notation: range(2,10) = all integers in bounds [2,9)
 beta_arr = np.array(np.power(10.0,[-6,-5,-4,-3, -2]))#np.array(np.power(10.0,range(-3,3))) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
-R_arr = np.array(np.power(10.0,[-6,-5,-4,-3, -2])) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+R_arr = np.array(np.power(10.0,[-4,-3, -2])) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
 file_extension = "txt" # string; examples: "atf" or "txt" (case sensitive); don't include period; lowercase
 
 # specify what the neuron names are in the file titles here:
