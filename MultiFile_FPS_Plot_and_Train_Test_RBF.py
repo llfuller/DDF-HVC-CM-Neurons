@@ -31,7 +31,7 @@ np.random.seed(2022)
 save_and_or_display = "save"
 
 # epoch = None # also called "episode". set to None if not specified
-tau_arr = np.array([10,20,30,500])#np.array(range(10, 20)) # math notation: range(2,10) = all integers in bounds [2,9)
+tau_arr = np.array([10,20,30])#np.array(range(10, 20)) # math notation: range(2,10) = all integers in bounds [2,9)
 D_arr = np.array([5,6,7,8])#np.array(range(2, 10)) # math notation: range(2,10) = all integers in bounds [2,9)
 beta_arr = np.array(np.power(10.0,[-6,-5,-4,-3, -2]))#np.array(np.power(10.0,range(-3,3))) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
 R_arr = np.array(np.power(10.0,[-4,-3, -2])) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
@@ -87,6 +87,9 @@ for a_path in full_paths_list:
     #     continue
     # if "Neuron 2" not in a_path:
     #     continue
+    # if "Lilac 157/Neuron 1/epoch_1" in a_path:
+    #     continue
+
     last_slash_location = a_path.rfind("/")
     a_filename = a_path[last_slash_location+1:]
     if len(files_to_evaluate)>0 and a_filename not in files_to_evaluate:
