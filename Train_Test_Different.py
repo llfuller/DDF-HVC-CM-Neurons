@@ -159,6 +159,12 @@ Voltage_test = loaded_V_test[test_timestep_start:total_num_timesteps_in_data_tes
 Current_test = loaded_I_test[test_timestep_start:total_num_timesteps_in_data_test]
 Time_test    = loaded_t_test[test_timestep_start:total_num_timesteps_in_data_test]
 
+plt.figure()
+plt.plot(Current_train)
+plt.plot(Current_test)
+plt.title("Current train vs current test")
+plt.show()
+
 directory_to_store_plots  = "plots/" + neuron_data_path + "trained_on_" + a_filename_train[:-4] + "_tested_on_" + a_filename_test[:-4] + "/"
 directory_to_store_txt_data = "data_derived/" + neuron_data_path + 'txt_V_I_t/' + "trained_on_" + a_filename_train[:-4] + "_tested_on_" + a_filename_test[:-4] + "/"
 
@@ -252,27 +258,44 @@ for window_size in [0.175]:#5, 75, 150, 300]:
 
 # ===============================  END OF POWER SPECTRA  =====================================
 # ===============================  Plotting training and testing current and voltage  =====================================
-# plotting_utilities.plotting_quantity(x_arr = Time_train, y_arr = Current_train, title = "Training Current",
-#                                      xlabel = "Time ("+str(Time_units)+")", ylabel = "Current ("+str(Current_units)+")",
-#                                      save_and_or_display=save_and_or_display,
-#                                      save_location=directory_to_store_plots+"I_V_training_and_testing/"+"Train 1 first half Test 1 second half"+" Training Current.png")
-# plotting_utilities.plotting_quantity(x_arr = Time_train, y_arr = Voltage_train, title = "Training Voltage",
-#                                      xlabel = "Time ("+str(Time_units)+")", ylabel = "Voltage ("+str(Voltage_units)+")",
-#                                      save_and_or_display=save_and_or_display,
-#                                      save_location=directory_to_store_plots+"I_V_training_and_testing/"+"Train 1 first half Test 1 second half"+" Training Voltage.png")
-#
-# plotting_utilities.plotting_quantity(x_arr = Time_test, y_arr = Current_test, title = "Test Current",
-#                                      xlabel = "Time ("+str(Time_units)+")", ylabel = "Current ("+str(Current_units)+")",
-#                                      save_and_or_display=save_and_or_display,
-#                                      save_location=directory_to_store_plots+"I_V_training_and_testing/"+"Train 1 first half Test 1 second half"+" Test Current.png")
-# plotting_utilities.plotting_quantity(x_arr = Time_test, y_arr = Voltage_test, title = "Test Voltage",
-#                                      xlabel = "Time ("+str(Time_units)+")", ylabel = "Voltage ("+str(Voltage_units)+")",
-#                                      save_and_or_display=save_and_or_display,
-#                                      save_location=directory_to_store_plots+"I_V_training_and_testing/"+"Train 1 first half Test 1 second half"+" Test Voltage.png")
+plotting_utilities.plotting_quantity(x_arr = Time_train, y_arr = Current_train, title = "Training Current",
+                                     xlabel = "Time ("+str(Time_units)+")", ylabel = "Current ("+str(Current_units)+")",
+                                     save_and_or_display=save_and_or_display,
+                                     save_location=directory_to_store_plots+"I_V_training_and_testing/"+a_filename_train[:-4]+" Training Current.png")
+plotting_utilities.plotting_quantity(x_arr = Time_train, y_arr = Voltage_train, title = "Training Voltage",
+                                     xlabel = "Time ("+str(Time_units)+")", ylabel = "Voltage ("+str(Voltage_units)+")",
+                                     save_and_or_display=save_and_or_display,
+                                     save_location=directory_to_store_plots+"I_V_training_and_testing/"+a_filename_train[:-4]+" Training Voltage.png")
+
+plotting_utilities.plotting_quantity(x_arr = Time_test, y_arr = Current_test, title = "Test Current",
+                                     xlabel = "Time ("+str(Time_units)+")", ylabel = "Current ("+str(Current_units)+")",
+                                     save_and_or_display=save_and_or_display,
+                                     save_location=directory_to_store_plots+"I_V_training_and_testing/"+a_filename_test[:-4]+" Test Current.png")
+plotting_utilities.plotting_quantity(x_arr = Time_test, y_arr = Voltage_test, title = "Test Voltage",
+                                     xlabel = "Time ("+str(Time_units)+")", ylabel = "Voltage ("+str(Voltage_units)+")",
+                                     save_and_or_display=save_and_or_display,
+                                     save_location=directory_to_store_plots+"I_V_training_and_testing/"+a_filename_test[:-4]+" Test Voltage.png")
+
+# Save accompanying text files:
+save_utilities.save_text(data = np.column_stack((Time_train, Current_train)),
+                         a_str = save_and_or_display,
+                         save_location = directory_to_store_txt_data + "I_V_training_and_testing/"+a_filename_train[:-4]+" Training Current.txt")
+# Save accompanying text files:
+save_utilities.save_text(data = np.column_stack((Time_train, Voltage_train)),
+                         a_str = save_and_or_display,
+                         save_location = directory_to_store_txt_data + "I_V_training_and_testing/"+a_filename_train[:-4]+" Training Voltage.txt")
+# Save accompanying text files:
+save_utilities.save_text(data = np.column_stack((Time_test, Current_test)),
+                         a_str = save_and_or_display,
+                         save_location = directory_to_store_txt_data + "I_V_training_and_testing/"+a_filename_test[:-4]+" Test Current.txt")
+# Save accompanying text files:
+save_utilities.save_text(data = np.column_stack((Time_test, Voltage_test)),
+                         a_str = save_and_or_display,
+                         save_location = directory_to_store_txt_data + "I_V_training_and_testing/"+a_filename_test[:-4]+"  Test Phase (True) Voltage.txt")
 
 
 # In[6]:
-num_trials = 30
+num_trials = 1
 conv_MSE_trials_array = np.zeros((np.shape(tau_arr)[0], num_trials, sigma_c_list.shape[0]))  # scalar MSE for each R (row) and trial (column)
 print("Shape of conv_MSE_trials_array: " +str(np.shape(conv_MSE_trials_array)))
 # =============================== Training and Prediction  =====================================
@@ -296,8 +319,8 @@ for trial_index in range(num_trials):
             Centers_k_means = DDF.KmeanCenter(Xdata,NoCenters_no_thresh,D,length,tau);
             time_k_centers_done = time.time()
             print("Time to find k centers: "+str(time_k_centers_done-time_start))
-            temp_array = copy.deepcopy(Xdata)
-            temp_array[temp_array<-50]=-100
+            # temp_array = copy.deepcopy(Xdata)
+            # temp_array[temp_array<-50]=-100
             # Centers_above_thresh = DDF.KmeanCenter(temp_array,NoCenters_above_thresh,D,length,tau);
             # Center = np.concatenate((Centers_k_means,Centers_above_thresh),axis=0)
             Center = Centers_k_means
@@ -325,16 +348,24 @@ for trial_index in range(num_trials):
                     #     continue
                     print("(tau, D, beta, R) = " + str((tau, D, beta,R)))
                     time_beta_r_start = time.time()
-                    title = "Train test different: "+str(neuron_name)+'_'+neuron_number+' with tstep='+str(TT)+' '+str(Time_units)+', D = '+str(D)+', Beta = '+str("{:.1e}".format(beta))+', R = '+str("{:.1e}".format(R))+' Train TSteps = '+str(length)+', Centers = '+str(NoCenters)+', tau = '+str(tau)
+                    title = "Train test different "+str(neuron_name)+'_'+neuron_number+' with tstep='+str(TT)+' '+str(Time_units)+', D = '+str(D)+', Beta = '+str("{:.1e}".format(beta))+', R = '+str("{:.1e}".format(R))+' Train TSteps = '+str(length)+', Centers = '+str(NoCenters)+', tau = '+str(tau)
                     # print(R)
                     # print("Shape of Xdata is now "+str(Xdata.shape))
-
+                    # plt.figure()
+                    # plt.plot(Xdata)
+                    # plt.plot(stim_train)
+                    # plt.title("Training Stimulus and Voltage")
+                    # plt.xlabel("Time")
+                    # plt.ylabel("Voltage or Current")
+                    # plt.show()
                     F = DDF.FuncApproxF(Xdata,length,Center,beta,R,D,stim_train,tau)
                     time_beta_r_trained = time.time()
                     print("Time to run one beta-r  training: " + str(time_beta_r_trained - time_beta_r_start)+" seconds")
                     time_beta_r_start_prediction = time.time()
                     PredValidation = DDF.PredictIntoTheFuture(F,PreLength,Current_test[bias-1:],Pdata[bias-1-(D-1)*tau:])
                     time_beta_r_end_prediction =  time.time()
+                    # plt.figure()
+
                     print("Time to run one beta-r  prediction: " + str(time_beta_r_end_prediction - time_beta_r_start_prediction)+" seconds")
 
                     # Tau8
@@ -345,7 +376,8 @@ for trial_index in range(num_trials):
                     plt.ylabel('Voltage ('+str(Voltage_units)+')',fontsize=20)
                     plt.legend()
                     plt.title(title,fontsize=20)
-                    # plt.savefig(directory_to_store_plots+title+'.png')
+                    # plt.show()
+                    plt.savefig(directory_to_store_plots+title+'.png')
                     # plt.show
                     print(f"Done with train {directory_to_read_input_data_test} and test{directory_to_read_input_data_test} for (tau,D,beta,R) {(tau,D,beta,R)}")
                     time_beta_r_end = time.time()
@@ -360,18 +392,37 @@ for trial_index in range(num_trials):
                     used_Current_test =  (loaded_I_test[test_timestep_start:total_num_timesteps_in_data_test])[bias:bias + PreLength]
                     Voltage_pred =  PredValidation[tau*(D-1)+1:tau*(D-1)+PreLength+1]
 
-                    # In[8]:
+                    # plt.figure()
+                    # plt.plot(Voltage_pred)
+                    # plt.plot(used_Current_test)
+                    # plt.plot(Voltage_pred)
+                    # plt.title("Testing Stimulus and Predicted Voltage")
+                    # plt.xlabel("Time")
+                    # plt.ylabel("Voltage or Current")
+                    # plt.show()
+                    #
+                    # plt.figure()
+                    # plt.plot(Voltage_pred)
+                    # plt.plot((loaded_I_train[test_timestep_start:total_num_timesteps_in_data_test])[bias:bias + PreLength])
+                    # plt.plot(Voltage_pred)
+                    # plt.title("Source Stimulus for training and Predicted Voltage")
+                    # plt.xlabel("Time")
+                    # plt.ylabel("Voltage or Current")
+                    # plt.show()
 
-                    # # Prediction and Truth Plotting
-                    # save_utilities.save_text(data=Pdata[bias:bias + PreLength],
-                    #                          a_str=save_and_or_display,
-                    #                          save_location=directory_to_store_txt_data + "prediction_and_truth/"+trial_number_string+"/" + title + "_voltage_truth.txt")
-                    # save_utilities.save_text(data=Voltage_pred,
-                    #                          a_str=save_and_or_display,
-                    #                          save_location=directory_to_store_txt_data + "prediction_and_truth/"+trial_number_string+"/" + title + "_voltage_prediction.txt")
-                    # save_utilities.save_text(data=X,
-                    #                          a_str=save_and_or_display,
-                    #                          save_location=directory_to_store_txt_data + "prediction_and_truth/"+trial_number_string+"/" + title + "_time.txt")
+
+                    # In[8]:
+                    print("Saving data")
+                    # Prediction and Truth Plotting
+                    save_utilities.save_text(data=Pdata[bias:bias + PreLength],
+                                             a_str=save_and_or_display,
+                                             save_location=directory_to_store_txt_data + "prediction_and_truth/" + title + "_voltage_truth.txt")
+                    save_utilities.save_text(data=Voltage_pred,
+                                             a_str=save_and_or_display,
+                                             save_location=directory_to_store_txt_data + "prediction_and_truth/" + title + "_voltage_prediction.txt")
+                    save_utilities.save_text(data=X,
+                                             a_str=save_and_or_display,
+                                             save_location=directory_to_store_txt_data + "prediction_and_truth/" + title + "_time.txt")
 
 
 
@@ -411,6 +462,8 @@ for trial_index in range(num_trials):
                     plt.title("Weight as a function of center voltage")
                     plt.xlabel("Center voltage ("+str(Voltage_units)+")")
                     plt.ylabel("Weight (Coeff of RBF)")
+                    if not os.path.isdir(directory_to_store_plots +"weights/"):
+                        os.makedirs(directory_to_store_plots +"weights/")
                     plt.savefig(directory_to_store_plots +"weights/"+ title+ "Weight(center_voltage).png")
                     if "display" in save_and_or_display:
                         plt.show()
