@@ -38,11 +38,102 @@ varying_hyperparam = "tau"
 		_epoch_1 with tstep=0.02 ms, D = 10, Beta = 1.0e-03, R = 1.0e-03 Train TSteps = 499000, Centers = 500, tau = 10
 			driven by "Current vs Time (I_colpitts_x_time_dilation=0.5).txt
 """
-# Testing MSE convolutional sigma with hyperparams that worked for L63x t-dilation=0.2-driven Lilac 242 Neuron 1 (Epoch 10).
+# # Testing MSE convolutional sigma with hyperparams that worked for L63x t-dilation=0.2-driven Lilac 242 Neuron 1 (Epoch 10).
+# tau_arr = np.array([10])#np.array(range(10, 20)) # math notation: range(2,10) = all integers in bounds [2,9)
+# D_arr = np.array([10])#np.array(range(2, 10)) # math notation: range(2,10) = all integers in bounds [2,9)
+# beta_arr = np.array(np.power(10.0,[-3]))#np.array(np.power(10.0,range(-3,3))) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+# R_arr = np.array(np.power(10.0,[-3])) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+# neuron_number = "Neuron 2"
+# neuron_data_path   = f"Data2022-50KhZ/7-7-2022/Red 171/{neuron_number}/"
+# training_data_path = neuron_data_path+"epoch_1.txt" # Colpitts
+# testing_data_path  = neuron_data_path+"epoch_2.txt" # Colpitts
+# testing_data_path  = neuron_data_path+"epoch_3.txt" # Colpitts
+# testing_data_path  = neuron_data_path+"epoch_4.txt" # Colpitts
+# testing_data_path  = neuron_data_path+"epoch_5.txt" # 920066 (the weird one)
+# testing_data_path  = neuron_data_path+"epoch_6.txt" # 920066 (the weird one)
+# testing_data_path  = neuron_data_path+"epoch_7.txt" # 920066 (the weird one)
+# testing_data_path  = neuron_data_path+"epoch_8.txt" # 920066 (the weird one)
+# testing_data_path  = neuron_data_path+"epoch_9.txt" # 920066 (the weird one)
+# testing_data_path  = neuron_data_path+"epoch_10.txt" # 920066 (the weird one)
+
+""" Parameters for 	
+*Lilac 114 Neuron 2 Epoch 1:
+		_epoch_1 with tstep=0.02 ms, D = 10, Beta = 1.0e-03, R = 1.0e-03 Train TSteps = 499000, Centers = 500, tau = 10
+			driven by "Current vs Time (I_L63_x_time_dilation=0.5).txt
+"""
+# # Testing MSE convolutional sigma with hyperparams that worked for L63x t-dilation=0.2-driven Lilac 242 Neuron 1 (Epoch 10).
 tau_arr = np.array([10])#np.array(range(10, 20)) # math notation: range(2,10) = all integers in bounds [2,9)
 D_arr = np.array([10])#np.array(range(2, 10)) # math notation: range(2,10) = all integers in bounds [2,9)
 beta_arr = np.array(np.power(10.0,[-3]))#np.array(np.power(10.0,range(-3,3))) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
 R_arr = np.array(np.power(10.0,[-3])) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+neuron_number = "Neuron 1"
+neuron_data_path   = f"Data2022-50KhZ/7-7-2022/Lilac 114/{neuron_number}/"
+training_data_path = neuron_data_path+"epoch_3.txt" # L63
+# testing_data_path  = neuron_data_path+"epoch_1.txt" # L63
+# testing_data_path  = neuron_data_path+"epoch_2.txt" # L63
+# testing_data_path  = neuron_data_path+"epoch_4.txt" # L63
+# testing_data_path  = neuron_data_path+"epoch_5.txt" # L63
+testing_data_path  = neuron_data_path+"epoch_6.txt" # L63
+
+
+
+""" Parameters for 	
+*Lilac 114 Neuron 2 Epoch 2:
+		_epoch_1 with tstep=0.02 ms, D = 10, Beta = 1.0e-03, R = 1.0e-03 Train TSteps = 499000, Centers = 500, tau = 10
+			driven by "Current vs Time (I_L63_x_time_dilation=0.5).txt
+"""
+# # # Testing MSE convolutional sigma with hyperparams that worked for L63x t-dilation=0.2-driven Lilac 242 Neuron 1 (Epoch 10).
+# tau_arr = np.array([10])#np.array(range(10, 20)) # math notation: range(2,10) = all integers in bounds [2,9)
+# D_arr = np.array([15])#np.array(range(2, 10)) # math notation: range(2,10) = all integers in bounds [2,9)
+# beta_arr = np.array(np.power(10.0,[-3]))#np.array(np.power(10.0,range(-3,3))) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+# R_arr = np.array(np.power(10.0,[-3])) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+# neuron_number = "Neuron 2"
+# neuron_data_path   = f"Data2022-50KhZ/7-7-2022/Lilac 114/{neuron_number}/"
+# training_data_path = neuron_data_path+"epoch_2.txt" # L63
+# testing_data_path  = neuron_data_path+"epoch_1.txt" # L63
+
+
+""" Parameters for 	
+*Lilac 242 Neuron 1 Epoch 1:
+		_epoch_1 with tstep=0.02 ms, D = 15, Beta = 1.0e-03, R = 1.0e-04 Train TSteps = 499000, Centers = 500, tau = 10
+			driven by "Current vs Time (I_L63_x_time_dilation=0.2).txt
+"""
+# Testing MSE convolutional sigma with hyperparams that worked for L63x t-dilation=0.2-driven Lilac 242 Neuron 1 (Epoch 10).
+# tau_arr = np.array([10])#np.array(range(10, 20)) # math notation: range(2,10) = all integers in bounds [2,9)
+# D_arr = np.array([15])#np.array(range(2, 10)) # math notation: range(2,10) = all integers in bounds [2,9)
+# beta_arr = np.array(np.power(10.0,[-3]))#np.array(np.power(10.0,range(-3,3))) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+# R_arr = np.array(np.power(10.0,[-4])) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+# neuron_number = "Neuron 1"
+# neuron_data_path   = f"Data2022-50KhZ/7-7-2022/Lilac 242/{neuron_number}/"
+# training_data_path = neuron_data_path+"epoch_1.txt" # L63
+# training_data_path = neuron_data_path+"epoch_2.txt" # L63
+# training_data_path = neuron_data_path+"epoch_3.txt" # L63
+# training_data_path = neuron_data_path+"epoch_5.txt" # L63
+# testing_data_path  = neuron_data_path+"epoch_2.txt" # L63
+# testing_data_path  = neuron_data_path+"epoch_3.txt" # L63
+# testing_data_path  = neuron_data_path+"epoch_4.txt" # L63
+# testing_data_path  = neuron_data_path+"epoch_5.txt" # L63
+
+
+""" Parameters for 	
+*Lilac 242 Neuron 2 Epoch 2:
+		_epoch_1 with tstep=0.02 ms, D = 15, Beta = 1.0e-03, R = 1.0e-03 Train TSteps = 499000, Centers = 500, tau = 10
+			driven by "Current vs Time (I_L63_x_time_dilation=0.2).txt
+"""
+# Testing MSE convolutional sigma with hyperparams that worked for L63x t-dilation=0.2-driven Lilac 242 Neuron 1 (Epoch 10).
+# tau_arr = np.array([10])#np.array(range(10, 20)) # math notation: range(2,10) = all integers in bounds [2,9)
+# D_arr = np.array([15])#np.array(range(2, 10)) # math notation: range(2,10) = all integers in bounds [2,9)
+# beta_arr = np.array(np.power(10.0,[-3]))#np.array(np.power(10.0,range(-3,3))) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+# R_arr = np.array(np.power(10.0,[-3])) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+# neuron_number = "Neuron 2"
+# neuron_data_path   = f"Data2022-50KhZ/7-7-2022/Lilac 242/{neuron_number}/"
+# training_data_path = neuron_data_path+"epoch_2.txt" # L63
+# # testing_data_path  = neuron_data_path+"epoch_1.txt" # L63
+# testing_data_path  = neuron_data_path+"epoch_2.txt" # L63
+# testing_data_path  = neuron_data_path+"epoch_3.txt" # L63
+# testing_data_path  = neuron_data_path+"epoch_4.txt" # L63
+
+
 file_extension = "txt" # string; examples: "atf" or "txt" (case sensitive); don't include period; lowercase
 
 
@@ -58,9 +149,6 @@ Time_units_test = "ms"
 
 TT = 0.02 # delta t in Time_units units, time between samples if not specified through loaded files
 
-# Data directory to recursively load data from:
-root_directory = "Data2022-50KhZ/7-7-2022/Red 171/Neuron 2/"#"biocm_simulations/"#"cm_ddf/data/"#"Data2022-50KhZ/" # example: "HVC_biocm_data/simulations/" ; Include the final "/"
-
 # Use only this file:
 files_to_evaluate = ["epoch_1.txt"]#"biocm_phasic_lzo_1_1_10_100_200.mat"] # leave this list empty if you want to evaluate all files in root_directory recursively
 
@@ -69,10 +157,6 @@ do_not_use_list = ["2014_09_10_0001.abf",
                    "2014_09_10_0003.abf"# file attached to Meliza's data when I received it said not to use these. The input signals are not suitable for training
                    ] # bad data for RBF training
 
-neuron_number = "Neuron 2"
-neuron_data_path   = f"Data2022-50KhZ/7-7-2022/Red 171/{neuron_number}/"
-training_data_path = neuron_data_path+"epoch_1.txt"
-testing_data_path  = neuron_data_path+"epoch_6.txt"
 
 FPS_xlim= (0,0.175)
 
@@ -83,7 +167,7 @@ sigma_c_list = np.array([0, 5, 10, 100, 500, 1000, 2000, 5000]) # list of convol
 
 # ======== do not modify below ==========
 print("Extensions searched: "+str(save_utilities.glob_extension_case_string_builder(file_extension)))
-full_paths_list = glob.glob(root_directory+"**/*."+str(save_utilities.glob_extension_case_string_builder(file_extension)),
+full_paths_list = glob.glob(neuron_data_path+"**/*."+str(save_utilities.glob_extension_case_string_builder(file_extension)),
                             recursive=True)
 neuron_name = "" # leave as "" if no neuron name is found
 # Files to ignore within directory:
@@ -120,7 +204,7 @@ def load_VIt_from_file(file_path, neuron_data_path, Current_units, Voltage_units
         loaded_I = imported_data[:, 1]
         loaded_t = imported_data[:, 2]
     else: # primarily .txt files
-        if "Data2022-50KhZ/" in root_directory:
+        if "Data2022-50KhZ/" in neuron_data_path:
             loaded_IV = np.loadtxt(file_path)
             loaded_I = loaded_IV[:, 0]
             loaded_V = loaded_IV[:, 1]
@@ -547,5 +631,5 @@ for trial_index in range(num_trials):
 print("Making convolutional MSE plots")
 
 # np.save(directory_to_store_txt_data+"conv_MSE_"+str(varying_hyperparam)+"_trials_array.npy", conv_MSE_trials_array)
-conv_MSE_trials_array = np.load(directory_to_store_txt_data+"conv_MSE_"+str(varying_hyperparam)+"_trials_array.npy")
-NoCenters = 500
+# conv_MSE_trials_array = np.load(directory_to_store_txt_data+"conv_MSE_"+str(varying_hyperparam)+"_trials_array.npy")
+# NoCenters = 500
