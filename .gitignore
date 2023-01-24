@@ -164,7 +164,8 @@ cython_debug/
 ./plots/
 ./temporary_plots/
 ./test_plotting/
-./data_derived/
+data_derived/
+plots/
 *.txt
 *.png
 *.abf
