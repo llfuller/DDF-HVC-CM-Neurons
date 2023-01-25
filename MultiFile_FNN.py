@@ -37,11 +37,12 @@ Time_units = "ms"
 TT = 0.02  # delta t in Time_units units, time between samples if not specified through loaded files
 
 # Data directory to recursively load data from:
-root_directory = "Data2022-50KhZ/11-30-2022/"  # example: "HVC_biocm_data/simulations/" ; Include the final "/"
+# root_directory = "Data2022-50KhZ/11-30-2022/"  # example: "HVC_biocm_data/simulations/" ; Include the final "/"
+root_directory = "Data2022-50KhZ/Lilac 114/Neuron 1/"
 
 # Use only this file:
 files_to_evaluate = [
-    # "epoch_1.txt"
+    "epoch_1.txt"
 ]  # "biocm_phasic_lzo_1_1_10_100_200.mat"] # leave this list empty if you want to evaluate all files in root_directory recursively
 
 do_not_use_list = (
@@ -221,6 +222,27 @@ for a_path in full_paths_list:
             c_i = 0
             r_i += 1
 
+        """New Edit by Barry: Save individual R value with FNN count as .txt files"""
+        if save_data:
+            # this run once
+            path = f'./FNN/R_v_FNN/{window}_{tau}/'
+            if not os.path.exists(path):
+                os.mkdir(path)
+            # this will be run recursively
+            plotted_data_arr = np.stack((exp, fnn_data),axis=-1) # TODO: check error for this line cuz the fnn_data is different 
+            save_utilities.save_text(data=plotted_data_arr,
+                                    a_str="save",
+                                    save_location=f"{directory_to_store_txt_data}FNN/FNN_vs_R_D={d},"
+                                                            f"window={window}.txt")
+            """
+            This should create a .txt file in the FNN/R_v_FNN/windowsize_tau/ directory with name RvFNN_{D value}:
+
+            {R value1} {FNN count1}
+            {R value2} {FNN count2}
+            {R value3} {FNN count3}
+            ...
+            """
+
 
     # get fnn for R=0.1 for all D values
     data = []
@@ -251,3 +273,22 @@ for a_path in full_paths_list:
                              a_str="save",
                              save_location=f"{directory_to_store_txt_data}FNN/FNN_vs_D_R={R},"
                                                        f"window={window}.txt")
+
+    # """New Edit by Barry: Save individual R value with FNN count as .txt files"""
+    # if save_data:
+    #     # this run once
+    #     path = f'./FNN/R_v_FNN/{window}_{tau}/'
+    #     if not os.path.exists(path):
+    #         os.mkdir(path)
+    #     # this will be run recursively
+    #     with open(path+f'RvFNN_{d}.txt', 'a+') as file:
+    #         for e, fnn in zip(exp, fnn_data):
+    #             file.write(f"{10**e} {fnn}")
+    #     """
+    #     This should create a .txt file in the FNN/R_v_FNN/windowsize_tau/ directory with name RvFNN_{D value}:
+
+    #     {R value1} {FNN count1}
+    #     {R value2} {FNN count2}
+    #     {R value3} {FNN count3}
+    #     ...
+    #     """
