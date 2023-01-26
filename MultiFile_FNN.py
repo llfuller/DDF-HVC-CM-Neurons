@@ -53,7 +53,7 @@ FPS_xlim = (0, 0.175)
 
 fraction_of_data_for_training = 4.0 / 6.0
 
-window = 100000 # number of timesteps to either side to consider when looking for nearest neighbors, ex: 5 => 10 total.
+window = 1000 # number of timesteps to either side to consider when looking for nearest neighbors, ex: 5 => 10 total.
 tau = 5
 R_ratio = 1e-2
 D_arr = np.array([1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 18, 20])
