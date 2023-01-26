@@ -120,6 +120,15 @@ save_and_or_display = "save"
 # D Testing
 varying_hyperparam = "D"
 # Testing MSE convolutional sigma with hyperparams that worked for ? t-dilation=?-driven Lilac 114 Neuron 1 (Epoch 1).
+# tau_arr = np.array([10])#np.array(range(10, 20)) # math notation: range(2,10) = all integers in bounds [2,9)
+# D_arr = np.array([2,4,6,8,10,12,15,18,20])#np.array(range(2, 10)) # math notation: range(2,10) = all integers in bounds [2,9)
+# beta_arr = np.array(np.power(10.0,[-3]))#np.array(np.power(10.0,range(-3,3))) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+# R_arr = np.array(np.power(10.0,[-3])) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+# file_extension = "txt" # string; examples: "atf" or "txt" (case sensitive); don't include period; lowercase
+
+# D Testing
+varying_hyperparam = "tau"
+# Testing MSE convolutional sigma with hyperparams that worked for ? t-dilation=?-driven Lilac 114 Neuron 1 (Epoch 1).
 tau_arr = np.array([10])#np.array(range(10, 20)) # math notation: range(2,10) = all integers in bounds [2,9)
 D_arr = np.array([2,4,6,8,10,12,15,18,20])#np.array(range(2, 10)) # math notation: range(2,10) = all integers in bounds [2,9)
 beta_arr = np.array(np.power(10.0,[-3]))#np.array(np.power(10.0,range(-3,3))) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
@@ -151,6 +160,8 @@ FPS_xlim= (0,0.175)
 fraction_of_data_for_training = 4.0/6.0
 
 sigma_c_list = np.array([0, 5, 10, 100, 500, 1000, 2000, 5000]) # list of convolutional gaussian sigma for MSE calc
+
+NoCenters = 500
 # In[3]:
 
 # ======== do not modify below ==========
@@ -480,7 +491,6 @@ for a_path in full_paths_list:
                         # sampling frequency: 50kHz, step size: 0.02ms
                         # range of sigma_G
                         # load file here instead of regenerating by commenting out above and uncommenting next four lines
-                        NoCenters = 500
                         title = str(neuron_name)+'_'+str(a_filename[:-4])+' with tstep='+str(TT)+' '+str(Time_units)+', D = '+str(D)+', Beta = '+str("{:.1e}".format(beta))+', R = '+str("{:.1e}".format(R))+' Train TSteps = '+str(length)+', Centers = '+str(NoCenters)+', tau = '+str(tau)
                         X = np.loadtxt(directory_to_store_txt_data + "prediction_and_truth/"+trial_number_string+"/" + title + "_time.txt")
                         Voltage_pred = np.loadtxt(directory_to_store_txt_data + "prediction_and_truth/"+trial_number_string+"/" + title + "_voltage_prediction.txt")
@@ -541,35 +551,56 @@ for a_path in full_paths_list:
                         save_utilities.save_and_or_display_plot(fig2, "save", directory_to_store_plots +"convolution_MSE_metric/"+trial_number_string+"/" +title+"_MSE_metric_vs_sigma.png")
                         plt.close(fig2)
 
+    print("Making convolutional MSE plots")
 
-print("Making convolutional MSE plots")
+    epoch_num = a_filename[:-4]
+    save_utilities.save_dict_with_makedir(conv_MSE_trials_array, directory_to_store_txt_data+"temp_compare/conv_MSE_"+str(epoch_num)+"_"+str(varying_hyperparam)+"_trials_array.npy")
+    conv_MSE_trials_array = np.load(directory_to_store_txt_data+"temp_compare/conv_MSE_"+str(epoch_num)+"_"+str(varying_hyperparam)+"_trials_array.npy")
 
-np.save(directory_to_store_txt_data+"conv_MSE_"+str(varying_hyperparam)+"_trials_array.npy", conv_MSE_trials_array)
-conv_MSE_trials_array = np.load(directory_to_store_txt_data+"conv_MSE_"+str(varying_hyperparam)+"_trials_array.npy")
-NoCenters = 500
-
-for sigma_c_index, sigma_c in enumerate(sigma_c_list):
-    MSE_range_fig = plt.figure()
-    ax = MSE_range_fig.add_subplot(111)
-    y_err1 = np.std(conv_MSE_trials_array[:,:,sigma_c_index], axis=1)
-    # ax.errorbar(np.log10(R_arr), np.average(conv_MSE_trials_array[:,:,sigma_c_index],axis=1), yerr=y_err1)
-    ax.set_ylabel("log10(MSE after convolution with Gaussian)")
-    ax.xaxis.grid()
-    ax.yaxis.grid()
-    if varying_hyperparam.lower() == "r":
-        title = str(neuron_name) + '_' + str(a_filename[:-4]) + ' with tstep=' + str(TT) + ' ' + str(
-            Time_units) + ', D = ' + str(D) + ', Beta = ' + str("{:.1e}".format(beta)) + ', R = variable' + ', Train TSteps = ' + str(length) + ', Centers = ' + str(NoCenters) + ', tau = ' + str(tau)
-        ax.set_xlabel("log10(R)")
-        for i in range(num_trials):
-            ax.scatter(np.log10(R_arr), np.log10(conv_MSE_trials_array[:,i,sigma_c_index]), s=5)
-
-
-    if varying_hyperparam.lower() == "d":
-        title = str(neuron_name) + '_' + str(a_filename[:-4]) + ' with tstep=' + str(TT) + ' ' + str(
-            Time_units) + ', D = variable' + ', Beta = ' + str("{:.1e}".format(beta)) + ', R = '+str(R) + ', Train TSteps = ' + str(length) + ', Centers = ' + str(NoCenters) + ', tau = ' + str(tau)
-        ax.set_xlabel("D")
-        for i in range(num_trials):
-            ax.scatter(D_arr, np.log10(conv_MSE_trials_array[:,i,sigma_c_index]), s=5)#np.log10(conv_MSE_trials_array[:,i,sigma_c_index]), s=5)
+    for sigma_c_index, sigma_c in enumerate(sigma_c_list):
+        MSE_range_fig = plt.figure()
+        ax = MSE_range_fig.add_subplot(111)
+        y_err1 = np.std(conv_MSE_trials_array[:, :, sigma_c_index], axis=1)
+        # ax.errorbar(np.log10(R_arr), np.average(conv_MSE_trials_array[:,:,sigma_c_index],axis=1), yerr=y_err1)
         ax.set_ylabel("log10(MSE after convolution with Gaussian)")
+        ax.xaxis.grid()
+        ax.yaxis.grid()
 
-    save_utilities.save_and_or_display_plot(MSE_range_fig, "save", directory_to_store_plots +"convolution_MSE_metric/"+ title+"_MSE_vs_R_for_sigma="+str(sigma_c)+".png")
+        if varying_hyperparam.lower() == "r":
+            title = str(neuron_name) + '_' + str(a_filename[:-4]) + ' with tstep=' + str(TT) + ' ' + str(
+                Time_units) + ', D = ' + str(D) + ', Beta = ' + str(
+                "{:.1e}".format(beta)) + ', R = variable' + ', Train TSteps = ' + str(length) + ', Centers = ' + str(
+                NoCenters) + ', tau = ' + str(tau)
+            xlabel = "log10(R)"
+            ax.set_xlabel(xlabel)
+            x_values = np.log10(R_arr)
+
+        if varying_hyperparam.lower() == "d":
+            title = str(neuron_name) + '_' + str(a_filename[:-4]) + ' with tstep=' + str(TT) + ' ' + str(
+                Time_units) + ', D = variable' + ', Beta = ' + str("{:.1e}".format(beta)) + ', R = ' + str(
+                R) + ', Train TSteps = ' + str(length) + ', Centers = ' + str(NoCenters) + ', tau = ' + str(tau)
+            xlabel = "D"
+            ax.set_xlabel("D")
+            ax.set_ylabel("log10(MSE after convolution with Gaussian)")
+            x_values = D_arr
+
+        if varying_hyperparam.lower() == "tau":
+            title = str(neuron_name) + '_' + str(a_filename[:-4]) + ' with tstep=' + str(TT) + ' ' + str(
+                Time_units) + ', D = ' + str(D) + ', Beta = ' + str("{:.1e}".format(beta)) + ', R = ' + str(
+                R) + ', Train TSteps = ' + str(length) + ', Centers = ' + str(NoCenters) + ', tau = variable'
+            xlabel = "tau (" + str("{:.2e}".format(tau * TT)) + " " + str(Time_units) + ")"
+            ax.set_xlabel("tau (" + str("{:.2e}".format(tau * TT)) + " " + str(Time_units) + ")")
+            ax.set_ylabel("log10(MSE after convolution with Gaussian)")
+            x_values = tau_arr
+
+        for i in range(num_trials):
+            ax.scatter(x_values, np.log10(conv_MSE_trials_array[:, i, sigma_c_index]), s=5)
+
+        save_utilities.save_txt_with_makedir(
+            np.hstack((x_values[:, None], np.log10(conv_MSE_trials_array[:, :, sigma_c_index]))),
+            directory_to_store_txt_data + "text_data/" + xlabel + "_and_log10(conv_MSE)_" + str(
+                varying_hyperparam) + f"_array_sigma_c={sigma_c}.txt")  # saving dim((num_varying_param, num_trials+1)) first column is varying_param_arr, second col is trial 1, .... last col is trial num_trials
+
+        save_utilities.save_and_or_display_plot(MSE_range_fig, "save",
+                                                directory_to_store_plots + "convolution_MSE_metric/" + title + "_MSE_vs_" + str(
+                                                    varying_hyperparam.lower()) + "_for_sigma=" + str(sigma_c) + ".png")

@@ -247,6 +247,8 @@ FPS_xlim= (0,0.175)
 fraction_of_data_for_training = 4.0/6.0
 
 sigma_c_list = np.array([0, 5, 10, 100, 500, 1000, 2000, 5000]) # list of convolutional gaussian sigma for MSE calc
+
+NoCenters = 500
 # In[3]:
 
 # ======== do not modify below ==========
@@ -643,43 +645,49 @@ for a_path in full_paths_list:
                         plt.close(fig2)
 
 
-print("Making convolutional MSE plots")
+    print("Making convolutional MSE plots")
 
-np.save(directory_to_store_txt_data+"conv_MSE_"+str(varying_hyperparam)+"_trials_array.npy", conv_MSE_trials_array)
-conv_MSE_trials_array = np.load(directory_to_store_txt_data+"conv_MSE_"+str(varying_hyperparam)+"_trials_array.npy")
-NoCenters = 500
+    np.save(directory_to_store_txt_data+"conv_MSE_"+str(varying_hyperparam)+"_trials_array.npy", conv_MSE_trials_array)
+    conv_MSE_trials_array = np.load(directory_to_store_txt_data+"conv_MSE_"+str(varying_hyperparam)+"_trials_array.npy")
 
-for sigma_c_index, sigma_c in enumerate(sigma_c_list):
-    MSE_range_fig = plt.figure()
-    ax = MSE_range_fig.add_subplot(111)
-    y_err1 = np.std(conv_MSE_trials_array[:,:,sigma_c_index], axis=1)
-    # ax.errorbar(np.log10(R_arr), np.average(conv_MSE_trials_array[:,:,sigma_c_index],axis=1), yerr=y_err1)
-    ax.set_ylabel("log10(MSE after convolution with Gaussian)")
-    ax.xaxis.grid()
-    ax.yaxis.grid()
-    if varying_hyperparam.lower() == "r":
-        title = str(neuron_name) + '_' + str(a_filename[:-4]) + ' with tstep=' + str(TT) + ' ' + str(
-            Time_units) + ', D = ' + str(D) + ', Beta = ' + str("{:.1e}".format(beta)) + ', R = variable' + ', Train TSteps = ' + str(length) + ', Centers = ' + str(NoCenters) + ', tau = ' + str(tau)
-        ax.set_xlabel("log10(R)")
-        for i in range(num_trials):
-            ax.scatter(np.log10(R_arr), np.log10(conv_MSE_trials_array[:,i,sigma_c_index]), s=5)
-
-
-    if varying_hyperparam.lower() == "d":
-        title = str(neuron_name) + '_' + str(a_filename[:-4]) + ' with tstep=' + str(TT) + ' ' + str(
-            Time_units) + ', D = variable' + ', Beta = ' + str("{:.1e}".format(beta)) + ', R = '+str(R) + ', Train TSteps = ' + str(length) + ', Centers = ' + str(NoCenters) + ', tau = ' + str(tau)
-        ax.set_xlabel("D")
-        for i in range(num_trials):
-            ax.scatter(D_arr, np.log10(conv_MSE_trials_array[:,i,sigma_c_index]), s=5)#np.log10(conv_MSE_trials_array[:,i,sigma_c_index]), s=5)
+    for sigma_c_index, sigma_c in enumerate(sigma_c_list):
+        MSE_range_fig = plt.figure()
+        ax = MSE_range_fig.add_subplot(111)
+        y_err1 = np.std(conv_MSE_trials_array[:,:,sigma_c_index], axis=1)
+        # ax.errorbar(np.log10(R_arr), np.average(conv_MSE_trials_array[:,:,sigma_c_index],axis=1), yerr=y_err1)
         ax.set_ylabel("log10(MSE after convolution with Gaussian)")
+        ax.xaxis.grid()
+        ax.yaxis.grid()
 
-    if varying_hyperparam.lower() == "tau":
-        title = str(neuron_name) + '_' + str(a_filename[:-4]) + ' with tstep=' + str(TT) + ' ' + str(
-            Time_units) + ', D = ' + str(D) + ', Beta = ' + str("{:.1e}".format(beta)) + ', R = '+str(R) + ', Train TSteps = ' + str(length) + ', Centers = ' + str(NoCenters) + ', tau = variable'
-        ax.set_xlabel("tau ("+str("{:.2e}".format(tau*TT))+" "+str(Time_units)+")")
+        if varying_hyperparam.lower() == "r":
+            title = str(neuron_name) + '_' + str(a_filename[:-4]) + ' with tstep=' + str(TT) + ' ' + str(
+                Time_units) + ', D = ' + str(D) + ', Beta = ' + str("{:.1e}".format(beta)) + ', R = variable' + ', Train TSteps = ' + str(length) + ', Centers = ' + str(NoCenters) + ', tau = ' + str(tau)
+            xlabel = "log10(R)"
+            ax.set_xlabel(xlabel)
+            x_values = np.log10(R_arr)
+
+        if varying_hyperparam.lower() == "d":
+            title = str(neuron_name) + '_' + str(a_filename[:-4]) + ' with tstep=' + str(TT) + ' ' + str(
+                Time_units) + ', D = variable' + ', Beta = ' + str("{:.1e}".format(beta)) + ', R = '+str(R) + ', Train TSteps = ' + str(length) + ', Centers = ' + str(NoCenters) + ', tau = ' + str(tau)
+            xlabel = "D"
+            ax.set_xlabel("D")
+            ax.set_ylabel("log10(MSE after convolution with Gaussian)")
+            x_values=D_arr
+
+        if varying_hyperparam.lower() == "tau":
+            title = str(neuron_name) + '_' + str(a_filename[:-4]) + ' with tstep=' + str(TT) + ' ' + str(
+                Time_units) + ', D = ' + str(D) + ', Beta = ' + str("{:.1e}".format(beta)) + ', R = '+str(R) + ', Train TSteps = ' + str(length) + ', Centers = ' + str(NoCenters) + ', tau = variable'
+            xlabel = "tau ("+str("{:.2e}".format(tau*TT))+" "+str(Time_units)+")"
+            ax.set_xlabel("tau ("+str("{:.2e}".format(tau*TT))+" "+str(Time_units)+")")
+            ax.set_ylabel("log10(MSE after convolution with Gaussian)")
+            x_values=tau_arr
+
         for i in range(num_trials):
-            ax.scatter(tau_arr, np.log10(conv_MSE_trials_array[:,i,sigma_c_index]), s=5)
-        ax.set_ylabel("log10(MSE after convolution with Gaussian)")
+            ax.scatter(x_values, np.log10(conv_MSE_trials_array[:,i,sigma_c_index]), s=5)
 
+        save_utilities.save_txt_with_makedir(
+            np.hstack((x_values[:, None], np.log10(conv_MSE_trials_array[:, :, sigma_c_index]))),
+            directory_to_store_txt_data + "text_data/"+xlabel+"_and_log10(conv_MSE)_" + str(
+                varying_hyperparam) + f"_array_sigma_c={sigma_c}.txt")  # saving dim((num_varying_param, num_trials+1)) first column is varying_param_arr, second col is trial 1, .... last col is trial num_trials
 
-    save_utilities.save_and_or_display_plot(MSE_range_fig, "save", directory_to_store_plots +"convolution_MSE_metric/"+ title+"_MSE_vs_"+str()+"_for_sigma="+str(sigma_c)+".png")
+        save_utilities.save_and_or_display_plot(MSE_range_fig, "save", directory_to_store_plots +"convolution_MSE_metric/"+ title+"_MSE_vs_"+str(varying_hyperparam.lower())+"_for_sigma="+str(sigma_c)+".png")
