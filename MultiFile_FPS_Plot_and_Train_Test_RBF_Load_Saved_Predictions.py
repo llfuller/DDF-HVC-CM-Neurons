@@ -31,7 +31,7 @@ import os
 save_and_or_display = "save"
 
 # R Testing
-# varying_hyperparam = "R"
+varying_hyperparam = "R"
 
 # epoch = None # also called "episode". set to None if not specified
 # tau_arr = np.array([7,10])#np.array(range(10, 20)) # math notation: range(2,10) = all integers in bounds [2,9)
@@ -62,11 +62,11 @@ save_and_or_display = "save"
 # file_extension = "mat" # string; examples: "atf" or "txt" (case sensitive); don't include period; lowercase
 
 # Testing MSE convolutional sigma with hyperparams that worked for Colpitts-driven Red 171 Neuron 2 (Epoch 1).
-# tau_arr = np.array([10])#np.array(range(10, 20)) # math notation: range(2,10) = all integers in bounds [2,9)
-# D_arr = np.array([10])#np.array(range(2, 10)) # math notation: range(2,10) = all integers in bounds [2,9)
-# beta_arr = np.array(np.power(10.0,[-3]))#np.array(np.power(10.0,range(-3,3))) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
-# R_arr = np.array(np.power(10.0,[-6,-5.75,-5.5,-5.25,-5,-4.75,-4.5,-4.25,-4,-3.75,-3.5,-3.25,-3,-2.75,-2.5,-2.25,-2,-1.75,-1.5,-1.25,-1])) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
-# file_extension = "txt" # string; examples: "atf" or "txt" (case sensitive); don't include period; lowercase
+tau_arr = np.array([10])#np.array(range(10, 20)) # math notation: range(2,10) = all integers in bounds [2,9)
+D_arr = np.array([10])#np.array(range(2, 10)) # math notation: range(2,10) = all integers in bounds [2,9)
+beta_arr = np.array(np.power(10.0,[-3]))#np.array(np.power(10.0,range(-3,3))) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+R_arr = np.array(np.power(10.0,[-6,-5.75,-5.5,-5.25,-5,-4.75,-4.5,-4.25,-4,-3.75,-3.5,-3.25,-3,-2.75,-2.5,-2.25,-2,-1.75,-1.5,-1.25,-1])) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+file_extension = "txt" # string; examples: "atf" or "txt" (case sensitive); don't include period; lowercase
 
 # Testing MSE convolutional sigma with hyperparams that worked for L63 t-dilation=0.5-driven Lilac 114 Neuron 1 (Epoch 3).
 # tau_arr = np.array([10])#np.array(range(10, 20)) # math notation: range(2,10) = all integers in bounds [2,9)
@@ -127,13 +127,13 @@ save_and_or_display = "save"
 # file_extension = "txt" # string; examples: "atf" or "txt" (case sensitive); don't include period; lowercase
 
 # tau Testing
-varying_hyperparam = "tau"
-# Testing MSE convolutional sigma with hyperparams that worked for Colpitts-driven Red 171 Neuron 2 (Epoch 1).
-tau_arr = np.array([2,4,6,8,10,12,15,18,20])#np.array(range(10, 20)) # math notation: range(2,10) = all integers in bounds [2,9)
-D_arr = np.array([10])#np.array(range(2, 10)) # math notation: range(2,10) = all integers in bounds [2,9)
-beta_arr = np.array(np.power(10.0,[-3]))#np.array(np.power(10.0,range(-3,3))) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
-R_arr = np.array(np.power(10.0,[-3])) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
-file_extension = "txt" # string; examples: "atf" or "txt" (case sensitive); don't include period; lowercase
+# varying_hyperparam = "tau"
+# # Testing MSE convolutional sigma with hyperparams that worked for Colpitts-driven Red 171 Neuron 2 (Epoch 1).
+# tau_arr = np.array([2,4,6,8,10,12,15,18,20])#np.array(range(10, 20)) # math notation: range(2,10) = all integers in bounds [2,9)
+# D_arr = np.array([10])#np.array(range(2, 10)) # math notation: range(2,10) = all integers in bounds [2,9)
+# beta_arr = np.array(np.power(10.0,[-3]))#np.array(np.power(10.0,range(-3,3))) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+# R_arr = np.array(np.power(10.0,[-3])) #range(-3,3) makes array go from 1e-3 to 1e2, not 1e3
+# file_extension = "txt" # string; examples: "atf" or "txt" (case sensitive); don't include period; lowercase
 
 
 # specify what the neuron names are in the file titles here:
@@ -254,90 +254,91 @@ for a_path in full_paths_list:
     power_spectrum = FPS_list[0]
     normalized_power_spec_without_0_index = power_spectrum[1:] / np.max(np.abs(power_spectrum[1:]))
     # #--------------- Current FPS Plots --------------
-    # # Training Current with no modifications
-    # fig = plotting_utilities.plotting_quantity(x_arr = freq_array, y_arr = power_spectrum/np.max(np.abs(power_spectrum)),
-    #                                            title = "Power(freq) of current_train (Neuron "+str(neuron_name)+'_'+str(a_filename[:-4])+")",
-    #                                            xlabel = "Frequency (kHz)",
-    #                                            ylabel = "Normalized Power (1.0 = max from whole spectrum)",
-    #                                            save_and_or_display= save_and_or_display,
-    #                                            save_location=directory_to_store_plots+"Fourier_analysis/"+"Power spectrum of training current (Neuron "+str(neuron_name)+'_'+str(a_filename[:-4])+")_full_data.png",
-    #                                            xlim=None)
-    # save_utilities.save_text(data = np.column_stack((freq_array, power_spectrum)),
-    #                          a_str = save_and_or_display,
-    #                          save_location = directory_to_store_txt_data + "Fourier_analysis/" + str(a_filename[:-4]) + "_Fourier_Spectrum_training_current-full_data.txt")
-    #
-    #
-    # # Training Current - No index 0, Normalized, many windows
-    # for window_size in [0.175]:#5, 75, 150, 300]:
-    #     final_index = int(round(float(window_size) / delta_freq))
-    #     fig = plotting_utilities.plotting_quantity(x_arr = freq_without_0_index, y_arr = normalized_power_spec_without_0_index,
-    #                                                title = "Power(freq) of current_train (Neuron "+str(neuron_name)+'_'+str(a_filename[:-4])+")",
-    #                                                xlabel = "Frequency (kHz)",
-    #                                                ylabel = "Normalized Power (1.0 = max from [1:])",
-    #                                                save_and_or_display= save_and_or_display,
-    #                                                save_location=directory_to_store_plots+"Fourier_analysis/"+"Power spectrum of training current (Neuron "+str(neuron_name)+'_'+str(a_filename[:-4])+")_last_freq_shown="+str(window_size)+".png",
-    #                                                xlim=(0, window_size))
-    #     save_utilities.save_text(data = np.column_stack((freq_without_0_index[:final_index], normalized_power_spec_without_0_index[:final_index])),
-    #                              a_str = save_and_or_display,
-    #                              save_location = directory_to_store_txt_data + "Fourier_analysis/" + str(a_filename[:-4]) + "_Fourier_Spectrum_training_current-_last_freq_shown="+str(window_size)+".txt")
-    #
-    #
-    # # --------------- Voltage FPS Plots --------------
-    # power_spectrum = FPS_list[1]
-    # # frequency = np.linspace(0, sampling_rate/2, len(power_spectrum))
-    # normalized_power_spec_without_0_index = power_spectrum[1:] / np.max(np.abs(power_spectrum[1:]))
-    #
-    #
-    # # Training Voltage with no modifications
-    # fig = plotting_utilities.plotting_quantity(x_arr = freq_array, y_arr = power_spectrum/np.max(np.abs(power_spectrum)),
-    #                                            title = "Power(freq) of voltage_train (Neuron " + str(neuron_name) + '_' + str(a_filename[:-4]) + ")",
-    #                                            xlabel = "Frequency (kHz)",
-    #                                            ylabel = "Normalized Power (1.0 = max from whole spectrum)",
-    #                                            save_and_or_display= save_and_or_display,
-    #                                            save_location=directory_to_store_plots +"Fourier_analysis/"+ "Power spectrum of training voltage (Neuron " + str(neuron_name) + '_' + str(a_filename[:-4]) + ")_full_data.png",
-    #                                            xlim=None)
-    # save_utilities.save_text(data = np.column_stack((freq_array, power_spectrum)),
-    #                          a_str = save_and_or_display,
-    #                          save_location = directory_to_store_txt_data + "Fourier_analysis/" + str(a_filename[:-4]) + "_Fourier_Spectrum_training_voltage-full_data.txt")
-    #
-    #
-    # # Training Current - No index 0, Normalized, many windows
-    # for window_size in [0.175]:#5, 75, 150, 300]:
-    #     final_index = int(round(float(window_size) / delta_freq))
-    #     fig = plotting_utilities.plotting_quantity(x_arr = freq_without_0_index, y_arr = normalized_power_spec_without_0_index,
-    #                                                title = "Power(freq) of voltage_train (Neuron "+str(neuron_name)+'_'+str(a_filename[:-4])+")",
-    #                                                xlabel = "Frequency (kHz)",
-    #                                                ylabel = "Normalized Power (1.0 = max from [1:])",
-    #                                                save_and_or_display= save_and_or_display,
-    #                                                save_location=directory_to_store_plots+"Fourier_analysis/"+"Power spectrum of training voltage (Neuron "+str(neuron_name)+'_'+str(a_filename[:-4])+")_last_freq_shown="+str(window_size)+".png",
-    #                                                xlim=(0, window_size))
-    #     save_utilities.save_text(data = np.column_stack((freq_without_0_index[:final_index], normalized_power_spec_without_0_index[:final_index])),
-    #                              a_str = save_and_or_display,
-    #                              save_location = directory_to_store_txt_data + "Fourier_analysis/" + str(a_filename[:-4]) + "_Fourier_Spectrum_training_voltage-_last_freq_shown="+str(window_size)+".txt")
-    #
-    # # ===============================  END OF POWER SPECTRA  =====================================
-    # # ===============================  Plotting training and testing current and voltage  =====================================
-    # plotting_utilities.plotting_quantity(x_arr = Time_train, y_arr = Current_train, title = "Training Current",
-    #                                      xlabel = "Time ("+str(Time_units)+")", ylabel = "Current ("+str(Current_units)+")",
-    #                                      save_and_or_display=save_and_or_display,
-    #                                      save_location=directory_to_store_plots+"I_V_training_and_testing/"+"Train 1 first half Test 1 second half"+" Training Current.png")
-    # plotting_utilities.plotting_quantity(x_arr = Time_train, y_arr = Voltage_train, title = "Training Voltage",
-    #                                      xlabel = "Time ("+str(Time_units)+")", ylabel = "Voltage ("+str(Voltage_units)+")",
-    #                                      save_and_or_display=save_and_or_display,
-    #                                      save_location=directory_to_store_plots+"I_V_training_and_testing/"+"Train 1 first half Test 1 second half"+" Training Voltage.png")
-    #
-    # plotting_utilities.plotting_quantity(x_arr = Time_test, y_arr = Current_test, title = "Test Current",
-    #                                      xlabel = "Time ("+str(Time_units)+")", ylabel = "Current ("+str(Current_units)+")",
-    #                                      save_and_or_display=save_and_or_display,
-    #                                      save_location=directory_to_store_plots+"I_V_training_and_testing/"+"Train 1 first half Test 1 second half"+" Test Current.png")
-    # plotting_utilities.plotting_quantity(x_arr = Time_test, y_arr = Voltage_test, title = "Test Voltage",
-    #                                      xlabel = "Time ("+str(Time_units)+")", ylabel = "Voltage ("+str(Voltage_units)+")",
-    #                                      save_and_or_display=save_and_or_display,
-    #                                      save_location=directory_to_store_plots+"I_V_training_and_testing/"+"Train 1 first half Test 1 second half"+" Test Voltage.png")
+    # Training Current with no modifications
+    fig = plotting_utilities.plotting_quantity(x_arr = freq_array, y_arr = power_spectrum/np.max(np.abs(power_spectrum)),
+                                               title = "Power(freq) of current_train (Neuron "+str(neuron_name)+'_'+str(a_filename[:-4])+")",
+                                               xlabel = "Frequency (kHz)",
+                                               ylabel = "Normalized Power (1.0 = max from whole spectrum)",
+                                               save_and_or_display= save_and_or_display,
+                                               save_location=directory_to_store_plots+"Fourier_analysis/"+"Power spectrum of training current (Neuron "+str(neuron_name)+'_'+str(a_filename[:-4])+")_full_data.png",
+                                               xlim=None)
+    save_utilities.save_text(data = np.column_stack((freq_array, power_spectrum)),
+                             a_str = save_and_or_display,
+                             save_location = directory_to_store_txt_data + "Fourier_analysis/" + str(a_filename[:-4]) + "_Fourier_Spectrum_training_current-full_data.txt")
+
+
+    # Training Current - No index 0, Normalized, many windows
+    for window_size in [0.175]:#5, 75, 150, 300]:
+        final_index = int(round(float(window_size) / delta_freq))
+        fig = plotting_utilities.plotting_quantity(x_arr = freq_without_0_index, y_arr = normalized_power_spec_without_0_index,
+                                                   title = "Power(freq) of current_train (Neuron "+str(neuron_name)+'_'+str(a_filename[:-4])+")",
+                                                   xlabel = "Frequency (kHz)",
+                                                   ylabel = "Normalized Power (1.0 = max from [1:])",
+                                                   save_and_or_display= save_and_or_display,
+                                                   save_location=directory_to_store_plots+"Fourier_analysis/"+"Power spectrum of training current (Neuron "+str(neuron_name)+'_'+str(a_filename[:-4])+")_last_freq_shown="+str(window_size)+".png",
+                                                   xlim=(0, window_size))
+        save_utilities.save_text(data = np.column_stack((freq_without_0_index[:final_index], normalized_power_spec_without_0_index[:final_index])),
+                                 a_str = save_and_or_display,
+                                 save_location = directory_to_store_txt_data + "Fourier_analysis/" + str(a_filename[:-4]) + "_Fourier_Spectrum_training_current-_last_freq_shown="+str(window_size)+".txt")
+
+
+    # --------------- Voltage FPS Plots --------------
+    power_spectrum = FPS_list[1]
+    # frequency = np.linspace(0, sampling_rate/2, len(power_spectrum))
+    normalized_power_spec_without_0_index = power_spectrum[1:] / np.max(np.abs(power_spectrum[1:]))
+
+
+    # Training Voltage with no modifications
+    fig = plotting_utilities.plotting_quantity(x_arr = freq_array, y_arr = power_spectrum/np.max(np.abs(power_spectrum)),
+                                               title = "Power(freq) of voltage_train (Neuron " + str(neuron_name) + '_' + str(a_filename[:-4]) + ")",
+                                               xlabel = "Frequency (kHz)",
+                                               ylabel = "Normalized Power (1.0 = max from whole spectrum)",
+                                               save_and_or_display= save_and_or_display,
+                                               save_location=directory_to_store_plots +"Fourier_analysis/"+ "Power spectrum of training voltage (Neuron " + str(neuron_name) + '_' + str(a_filename[:-4]) + ")_full_data.png",
+                                               xlim=None)
+    save_utilities.save_text(data = np.column_stack((freq_array, power_spectrum)),
+                             a_str = save_and_or_display,
+                             save_location = directory_to_store_txt_data + "Fourier_analysis/" + str(a_filename[:-4]) + "_Fourier_Spectrum_training_voltage-full_data.txt")
+
+
+    # Training Current - No index 0, Normalized, many windows
+    for window_size in [0.175]:#5, 75, 150, 300]:
+        final_index = int(round(float(window_size) / delta_freq))
+        fig = plotting_utilities.plotting_quantity(x_arr = freq_without_0_index, y_arr = normalized_power_spec_without_0_index,
+                                                   title = "Power(freq) of voltage_train (Neuron "+str(neuron_name)+'_'+str(a_filename[:-4])+")",
+                                                   xlabel = "Frequency (kHz)",
+                                                   ylabel = "Normalized Power (1.0 = max from [1:])",
+                                                   save_and_or_display= save_and_or_display,
+                                                   save_location=directory_to_store_plots+"Fourier_analysis/"+"Power spectrum of training voltage (Neuron "+str(neuron_name)+'_'+str(a_filename[:-4])+")_last_freq_shown="+str(window_size)+".png",
+                                                   xlim=(0, window_size))
+        save_utilities.save_text(data = np.column_stack((freq_without_0_index[:final_index], normalized_power_spec_without_0_index[:final_index])),
+                                 a_str = save_and_or_display,
+                                 save_location = directory_to_store_txt_data + "Fourier_analysis/" + str(a_filename[:-4]) + "_Fourier_Spectrum_training_voltage-_last_freq_shown="+str(window_size)+".txt")
+
+    # ===============================  END OF POWER SPECTRA  =====================================
+    # ===============================  Plotting training and testing current and voltage  =====================================
+    plotting_utilities.plotting_quantity(x_arr = Time_train, y_arr = Current_train, title = "Training Current",
+                                         xlabel = "Time ("+str(Time_units)+")", ylabel = "Current ("+str(Current_units)+")",
+                                         save_and_or_display=save_and_or_display,
+                                         save_location=directory_to_store_plots+"I_V_training_and_testing/"+"Train 1 first half Test 1 second half"+" Training Current.png")
+    plotting_utilities.plotting_quantity(x_arr = Time_train, y_arr = Voltage_train, title = "Training Voltage",
+                                         xlabel = "Time ("+str(Time_units)+")", ylabel = "Voltage ("+str(Voltage_units)+")",
+                                         save_and_or_display=save_and_or_display,
+                                         save_location=directory_to_store_plots+"I_V_training_and_testing/"+"Train 1 first half Test 1 second half"+" Training Voltage.png")
+
+    plotting_utilities.plotting_quantity(x_arr = Time_test, y_arr = Current_test, title = "Test Current",
+                                         xlabel = "Time ("+str(Time_units)+")", ylabel = "Current ("+str(Current_units)+")",
+                                         save_and_or_display=save_and_or_display,
+                                         save_location=directory_to_store_plots+"I_V_training_and_testing/"+"Train 1 first half Test 1 second half"+" Test Current.png")
+    plotting_utilities.plotting_quantity(x_arr = Time_test, y_arr = Voltage_test, title = "Test Voltage",
+                                         xlabel = "Time ("+str(Time_units)+")", ylabel = "Voltage ("+str(Voltage_units)+")",
+                                         save_and_or_display=save_and_or_display,
+                                         save_location=directory_to_store_plots+"I_V_training_and_testing/"+"Train 1 first half Test 1 second half"+" Test Voltage.png")
 
 
     # In[6]:
     num_trials = 30
+    NoCenters = 500
     if varying_hyperparam.lower() =="r":
         conv_MSE_trials_array = np.zeros((np.shape(R_arr)[0], num_trials, sigma_c_list.shape[0]))  # scalar MSE for each R (row) and trial (column)
     elif varying_hyperparam.lower() =="tau":
@@ -396,7 +397,7 @@ for a_path in full_paths_list:
 #                         # #     continue
 #                         # print("(tau, D, beta, R) = " + str((tau, D, beta,R)))
 #                         # time_beta_r_start = time.time()
-#                         # title = str(neuron_name)+'_'+str(a_filename[:-4])+' with tstep='+str(TT)+' '+str(Time_units)+', D = '+str(D)+', Beta = '+str("{:.1e}".format(beta))+', R = '+str("{:.1e}".format(R))+' Train TSteps = '+str(length)+', Centers = '+str(NoCenters)+', tau = '+str(tau)
+                        title = str(neuron_name)+'_'+str(a_filename[:-4])+' with tstep='+str(TT)+' '+str(Time_units)+', D = '+str(D)+', Beta = '+str("{:.1e}".format(beta))+', R = '+str("{:.1e}".format(R))+' Train TSteps = '+str(length)+', Centers = '+str(NoCenters)+', tau = '+str(tau)
 #                         # # print(R)
 #                         # # print("Shape of Xdata is now "+str(Xdata.shape))
 #                         #
@@ -496,45 +497,48 @@ for a_path in full_paths_list:
 #                         # sampling frequency: 50kHz, step size: 0.02ms
 #                         # range of sigma_G
 #                         # load file here instead of regenerating by commenting out above and uncommenting next four lines
-#                         NoCenters = 500
-#                         title = str(neuron_name)+'_'+str(a_filename[:-4])+' with tstep='+str(TT)+' '+str(Time_units)+', D = '+str(D)+', Beta = '+str("{:.1e}".format(beta))+', R = '+str("{:.1e}".format(R))+' Train TSteps = '+str(length)+', Centers = '+str(NoCenters)+', tau = '+str(tau)
-#                         X = np.loadtxt(directory_to_store_txt_data + "prediction_and_truth/"+trial_number_string+"/" + title + "_time.txt")
-#                         Voltage_pred = np.loadtxt(directory_to_store_txt_data + "prediction_and_truth/"+trial_number_string+"/" + title + "_voltage_prediction.txt")
-#                         used_Voltage_test = np.loadtxt(directory_to_store_txt_data + "prediction_and_truth/"+trial_number_string+"/" + title + "_voltage_truth.txt")
+                        NoCenters = 500
+                        title = str(neuron_name)+'_'+str(a_filename[:-4])+' with tstep='+str(TT)+' '+str(Time_units)+', D = '+str(D)+', Beta = '+str("{:.1e}".format(beta))+', R = '+str("{:.1e}".format(R))+' Train TSteps = '+str(length)+', Centers = '+str(NoCenters)+', tau = '+str(tau)
+                        X = np.loadtxt(directory_to_store_txt_data + "prediction_and_truth/"+trial_number_string+"/" + title + "_time.txt")
+                        Voltage_pred = np.loadtxt(directory_to_store_txt_data + "prediction_and_truth/"+trial_number_string+"/" + title + "_voltage_prediction.txt")
+                        used_Voltage_test = np.loadtxt(directory_to_store_txt_data + "prediction_and_truth/"+trial_number_string+"/" + title + "_voltage_truth.txt")
 #                         print("Testing for "+str(title)+";"+" Trial "+str(trial_index))
 #
-#                         cost_list = []
-#                         for sigma_c_index, sigma_convolution in enumerate(sigma_c_list):
-#                             # sigma_convolution = 200
-#                             if sigma_convolution == 0:
-#                                 predict_conv = Voltage_pred
-#                                 true_conv = used_Voltage_test
-#                             else:
-#                                 predict_conv = gaussian_filter1d(Voltage_pred, sigma_convolution, truncate=4)
-#                                 true_conv = gaussian_filter1d(used_Voltage_test, sigma_convolution, truncate=4)
-#                             fig = plt.figure()
-#                             ax = fig.add_subplot(111)
-#                             ax.plot(X, used_Voltage_test, 'g', label='True Voltage')
-#                             ax.plot(X, true_conv, label='True Voltage (convolved)', color='black')
-#                             ax.plot(X, predict_conv, 'r--', label='Prediction (convolved)')
-#                             ax.set_title("Convolved V(t) for Sigma="+str(sigma_convolution))
-#                             ax.set_xlabel("Time ("+str(Time_units)+")")
-#                             ax.set_ylabel("Convolved Voltage ("+str(Voltage_units)+")")
-#                             # if "current" in title.lower():
-#                             #     ax.get_lines()[0].set_color("orange")
-#                             # if "voltage" in title.lower():
-#                             #     ax.get_lines()[0].set_color("blue")
-#                             # plt.xlim((12.5,13.5))
-#                             save_utilities.save_and_or_display_plot(fig, "save", directory_to_store_plots + "convolution_MSE_metric/"+trial_number_string+"/" + title + "_Convolved_waveforms_sigma="+str(sigma_convolution)+".png")
-#                             plt.close(fig)
-#                             cost = (np.sum((predict_conv - true_conv) ** 2)) / len(true_conv)
-#                             # cost_list.append(cost) # m
-#                             if varying_hyperparam.lower() == "r":
-#                                 conv_MSE_trials_array[R_index,trial_index,sigma_c_index] = cost
-#                             if varying_hyperparam.lower() == "d":
-#                                 conv_MSE_trials_array[D_index,trial_index,sigma_c_index] = cost
-#
-#                         print("COST WAS: "+str(cost))
+                        cost_list = []
+                        for sigma_c_index, sigma_convolution in enumerate(sigma_c_list):
+                            # sigma_convolution = 200
+                            if sigma_convolution == 0:
+                                predict_conv = Voltage_pred
+                                true_conv = used_Voltage_test
+                            else:
+                                predict_conv = gaussian_filter1d(Voltage_pred, sigma_convolution, truncate=4)
+                                true_conv = gaussian_filter1d(used_Voltage_test, sigma_convolution, truncate=4)
+                            fig = plt.figure()
+                            ax = fig.add_subplot(111)
+                            ax.plot(X, used_Voltage_test, 'g', label='True Voltage')
+                            ax.plot(X, true_conv, label='True Voltage (convolved)', color='black')
+                            ax.plot(X, predict_conv, 'r--', label='Prediction (convolved)')
+                            ax.set_title("Convolved V(t) for Sigma="+str(sigma_convolution))
+                            ax.set_xlabel("Time ("+str(Time_units)+")")
+                            ax.set_ylabel("Convolved Voltage ("+str(Voltage_units)+")")
+                            # if "current" in title.lower():
+                            #     ax.get_lines()[0].set_color("orange")
+                            # if "voltage" in title.lower():
+                            #     ax.get_lines()[0].set_color("blue")
+                            # plt.xlim((12.5,13.5))
+                            save_utilities.save_and_or_display_plot(fig, "save", directory_to_store_plots + "convolution_MSE_metric/"+trial_number_string+"/" + title + "_Convolved_waveforms_sigma="+str(sigma_convolution)+".png")
+                            plt.close(fig)
+                            save_utilities.save_text(data=np.stack((X, used_Voltage_test, true_conv, predict_conv),axis=-1),
+                                                     a_str="save",
+                                                     save_location=directory_to_store_txt_data + "convolution_MSE_metric/"+trial_number_string+"/" + title + "_Convolved_waveforms_sigma="+str(sigma_convolution)+".txt")
+                            cost = (np.sum((predict_conv - true_conv) ** 2)) / len(true_conv)
+                            # cost_list.append(cost) # m
+                            if varying_hyperparam.lower() == "r":
+                                conv_MSE_trials_array[R_index,trial_index,sigma_c_index] = cost
+                            if varying_hyperparam.lower() == "d":
+                                conv_MSE_trials_array[D_index,trial_index,sigma_c_index] = cost
+
+                        print("COST WAS: "+str(cost))
 #
 #                         # convert the unit of sigma_G from step to ms
 #                         sigma_range_in_ms = np.array(sigma_c_list) * TT
@@ -559,9 +563,11 @@ for a_path in full_paths_list:
                         pass
     #
     #
+
     # print("Making convolutional MSE plots")
-    # save_utilities.save_dict_with_makedir(conv_MSE_trials_array, directory_to_store_txt_data+"temp_compare/conv_MSE_"+str(varying_hyperparam)+"_trials_array.npy")
-    conv_MSE_trials_array = np.load(directory_to_store_txt_data+"conv_MSE_"+str(varying_hyperparam)+"_trials_array.npy")
+    epoch_num = a_filename[:-4]
+    save_utilities.save_dict_with_makedir(conv_MSE_trials_array, directory_to_store_txt_data+"temp_compare/conv_MSE_"+str(epoch_num)+"_"+str(varying_hyperparam)+"_trials_array.npy")
+    conv_MSE_trials_array = np.load(directory_to_store_txt_data+"temp_compare/conv_MSE_"+str(epoch_num)+"_"+str(varying_hyperparam)+"_trials_array.npy")
     NoCenters = 500
 
     for sigma_c_index, sigma_c in enumerate(sigma_c_list):
