@@ -38,7 +38,7 @@ TT = 0.02  # delta t in Time_units units, time between samples if not specified 
 
 # Data directory to recursively load data from:
 # root_directory = "Data2022-50KhZ/11-30-2022/"  # example: "HVC_biocm_data/simulations/" ; Include the final "/"
-root_directory = "Data2022-50KhZ/Lilac 114/Neuron 1/"
+root_directory = "Data2022-50KhZ/7-7-2022/Lilac 114/Neuron 1/"
 
 # Use only this file:
 files_to_evaluate = [
@@ -227,9 +227,9 @@ for a_path in full_paths_list:
             # this run once
             path = f'./FNN/R_v_FNN/{window}_{tau}/'
             if not os.path.exists(path):
-                os.mkdir(path)
+                os.makedirs(path)
             # this will be run recursively
-            plotted_data_arr = np.stack((exp, fnn_data),axis=-1) # TODO: check error for this line cuz the fnn_data is different 
+            plotted_data_arr = np.stack((exp, fnn_data),axis=-1) # TODO: check error for this line cuz the fnn_data is different
             save_utilities.save_text(data=plotted_data_arr,
                                     a_str="save",
                                     save_location=f"{directory_to_store_txt_data}FNN/FNN_vs_R_D={d},"

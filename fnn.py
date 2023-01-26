@@ -30,7 +30,7 @@ def count_fnn(dataset, threshold_R=1e-1):
     Return:
     A floating point number indicating the number of false nearest neighbors in the dataset.
     """
-    device = torch.device('cuda:0') if torch.cuda.is_available() else torch.device('cpu')
+    device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
     dataset_tensor = torch.stack([torch.stack(tuple(pairs)) for pairs in dataset]).to(device)
     true_tensor = dataset_tensor[:, :, 0].to(device)
 
@@ -118,8 +118,8 @@ def generate_min_dist_datapoints(data, window=1000, save_data=True):
         result_index.append(min_distance_pair_index)
 
         # early stopping for time-saving purposes
-        if i == int(round(len(data)/1000)):
-            break
+        # if i == int(round(len(data)/1000)):
+        #     break
 
     # for i in tqdm.tqdm(range(len(data))):
     #     result_data.append(min_distance_pair_data)
