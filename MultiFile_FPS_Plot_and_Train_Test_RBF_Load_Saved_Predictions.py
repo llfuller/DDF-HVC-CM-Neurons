@@ -571,17 +571,14 @@ for a_path in full_paths_list:
                 Time_units) + ', D = ' + str(D) + ', Beta = ' + str(
                 "{:.1e}".format(beta)) + ', R = variable' + ', Train TSteps = ' + str(length) + ', Centers = ' + str(
                 NoCenters) + ', tau = ' + str(tau)
-            xlabel = "log10(R)"
-            ax.set_xlabel(xlabel)
             x_values = np.log10(R_arr)
+            xlabel = "log10(R)"
 
         if varying_hyperparam.lower() == "d":
             title = str(neuron_name) + '_' + str(a_filename[:-4]) + ' with tstep=' + str(TT) + ' ' + str(
                 Time_units) + ', D = variable' + ', Beta = ' + str("{:.1e}".format(beta)) + ', R = ' + str(
                 R) + ', Train TSteps = ' + str(length) + ', Centers = ' + str(NoCenters) + ', tau = ' + str(tau)
             xlabel = "D"
-            ax.set_xlabel("D")
-            ax.set_ylabel("log10(MSE after convolution with Gaussian)")
             x_values = D_arr
 
         if varying_hyperparam.lower() == "tau":
@@ -589,9 +586,10 @@ for a_path in full_paths_list:
                 Time_units) + ', D = ' + str(D) + ', Beta = ' + str("{:.1e}".format(beta)) + ', R = ' + str(
                 R) + ', Train TSteps = ' + str(length) + ', Centers = ' + str(NoCenters) + ', tau = variable'
             xlabel = "tau (" + str("{:.2e}".format(tau * TT)) + " " + str(Time_units) + ")"
-            ax.set_xlabel("tau (" + str("{:.2e}".format(tau * TT)) + " " + str(Time_units) + ")")
-            ax.set_ylabel("log10(MSE after convolution with Gaussian)")
             x_values = tau_arr
+
+        ax.set_xlabel(xlabel)
+        ax.set_ylabel("log10(MSE after convolution with Gaussian)")
 
         for i in range(num_trials):
             ax.scatter(x_values, np.log10(conv_MSE_trials_array[:, i, sigma_c_index]), s=5)
