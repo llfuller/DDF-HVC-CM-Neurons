@@ -93,7 +93,7 @@ def AveMutIGraph(DelayMax,data,length,lower,upper,nobins):
 #
 #     # Plotting for L63x t-dilation=0.2-driven Lilac 242 Neuron 1 (Epoch 10).
 
-root_directory = "Data2022-50KhZ/7-7-2022/"#Red 171/Neuron 2/"
+root_directory = "Data2022-50KhZ/7-7-2022/Red 171/Neuron 2/"
 file_extension = "txt" # string; examples: "atf" or "txt" (case sensitive); don't include period; lowercase
 # Use only this file:
 files_to_evaluate = []#"epoch_1.txt"]#"biocm_phasic_lzo_1_1_10_100_200.mat"] # leave this list empty if you want to evaluate all files in root_directory recursively
@@ -142,7 +142,7 @@ for a_path in full_paths_list:
         continue
     directory_to_read_input_data = a_path[:last_slash_location+1] # should include the last slash, but nothing past it
     directory_to_store_plots = "plots/" + directory_to_read_input_data + str(a_filename[:-4]) + "/"
-    directory_to_store_txt_data = "data_derived/" + directory_to_read_input_data + 'txt_V_I_t/'
+    directory_to_store_txt_data = "data_derived/" + directory_to_read_input_data
     neuron_name = save_utilities.give_name_if_included_in_path(a_path, neuron_name_list)
     print("================================New File ==================================================")
     if a_filename in do_not_use_list:
@@ -224,6 +224,7 @@ for a_path in full_paths_list:
                                          save_location=directory_to_store_plots+"I_V_training_and_testing/"+"Train 1 first half Test 1 second half"+" Test Voltage.png")
 
     AMI_plots_save_location = directory_to_store_plots + "Avg_Mut_Info/"
+    AMI_txt_data_save_location = directory_to_store_txt_data + "Avg_Mut_Info/"
     #Make save directory if it doesn't exist:
     if "/" in AMI_plots_save_location:
         last_slash_index = AMI_plots_save_location.rfind('/') #finds last location of "/" in save_location
@@ -232,39 +233,48 @@ for a_path in full_paths_list:
 
     exp_data = loaded_V
     exp_data_I = loaded_I
-    DelayMax = 70000
+    DelayMax = 100
 
     start_time = time.time()
-    nobins = 400
+    nobins = 2000 # bin resolution. 400 before editing
     # AMIT = AveMutIGraph(30000,NaKL[0],15000,-160,60,nobins=nobins)
     # plt.figure()
     # plt.plot(exp_data)
     # plt.plot(exp_data_I)
     # plt.show()
-    AMI_length = 3000
+    AMI_length = 100000
     print("exp_data.shape" + str(exp_data.shape))
     AMIT = AveMutIGraph(DelayMax=DelayMax,data=exp_data,length=AMI_length,lower=-160,upper=60,nobins=nobins)
     print("--- %s seconds ---" % (time.time() - start_time))
     print(AMIT)
-    plt.figure(figsize=(20, 10))
-    plt.plot(np.multiply(TT,np.array(range(DelayMax))),AMIT, label='Average Mutual Information')
-    plt.xlabel("tau ("+str(Time_units)+")")
-    plt.ylabel("Average Mutual Information")
+
+    fig = plt.figure(figsize=(20, 10))
+    ax= fig.add_subplot(111)
+    ax.plot(np.multiply(TT,np.array(range(DelayMax))),AMIT, label='Average Mutual Information')
+    ax.set_xlabel("tau ("+str(Time_units)+")")
+    # ax.plot(np.array(range(DelayMax)),AMIT, label='Average Mutual Information')
+    # ax.set_xlabel("tau (Timesteps)")
+    ax.set_ylabel("Average Mutual Information")
     # plt.xlim(0, 1000)
     # plt.ylim(0, 0.1)
     plt.legend()
     # plt.show()
-    if not os.path.isdir(directory):
-        os.makedirs(directory)
-    if os.path.isdir(directory):
-        plt.savefig(directory +"/"+ str(a_filename[:-4])+"png", bbox_inches='tight')
+    # if not os.path.isdir(directory):
+    #     os.makedirs(directory)
+    # if os.path.isdir(directory):
+    #     plt.savefig(directory +"/"+ str(a_filename[:-4])+"png", bbox_inches='tight')
+    save_utilities.save_fig_with_makedir(figure=fig,
+                                         save_location=directory_to_store_plots + "Avg_Mut_Info/"+ str(a_filename[:-4])+"_ms_time_units.png")
     plt.close("all")
 
-    if not os.path.isdir("data_derived/" + directory_to_read_input_data +"/Avg_Mut_Info/"):
-        os.makedirs("data_derived/" + directory_to_read_input_data +"/Avg_Mut_Info/")
-    if os.path.isdir("data_derived/" + directory_to_read_input_data +"/Avg_Mut_Info/"):
-        np.savetxt("data_derived/" + directory_to_read_input_data +"/Avg_Mut_Info/"+ str(a_filename[:-4])+"png",
-                   np.hstack((np.multiply(TT,np.array(range(DelayMax))), AMIT)))
+    # if not os.path.isdir("data_derived/" + directory_to_read_input_data +"/Avg_Mut_Info/"):
+    #     os.makedirs("data_derived/" + directory_to_read_input_data +"/Avg_Mut_Info/")
+    # if os.path.isdir("data_derived/" + directory_to_read_input_data +"/Avg_Mut_Info/"):
+    #     np.savetxt("data_derived/" + directory_to_read_input_data +"/Avg_Mut_Info/"+ str(a_filename[:-4])+".txt",
+    #                np.hstack((np.multiply(TT,np.array(range(DelayMax))), AMIT)))
+
+    save_utilities.save_txt_with_makedir(data=np.vstack((np.multiply(TT,np.array(range(DelayMax))), AMIT)).transpose(),
+                                         save_location=directory_to_store_txt_data + "Avg_Mut_Info/"+ "AMI_"+str(a_filename[:-4])+".txt")
 
     # No need to train or predict (other scripts take care of that)
 
