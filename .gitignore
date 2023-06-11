@@ -174,3 +174,8 @@ cython_debug/
 *.zip
 *.mat
 *.7z
+*.npy
+*.pdf
+Centers2
+test.ipynb
+*.pkl

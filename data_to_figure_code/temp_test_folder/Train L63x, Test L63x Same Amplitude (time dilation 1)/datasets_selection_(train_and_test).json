@@ -1,0 +1,8 @@
+{
+    "names_to_select_training": [
+        "NaKL_1_V(t)_Response_to_I_L63_x_time_dilation=1.0_(lower,upper)=(-100.0,300)pA"
+    ],
+    "names_to_select_testing": [
+        "NaKL_1_V(t)_Response_to_I_L63_x_time_dilation=1.0_(lower,upper)=(-100.0,300)pA"
+    ]
+}

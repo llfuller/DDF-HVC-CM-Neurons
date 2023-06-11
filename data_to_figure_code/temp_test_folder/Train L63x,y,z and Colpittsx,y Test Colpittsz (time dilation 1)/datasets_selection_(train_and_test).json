@@ -1,0 +1,37 @@
+{
+    "names_to_select_training": [
+        "NaKL_1_V(t)_Response_to_I_L63_x_time_dilation=0.5_(lower,upper)=(-33.33,100)pA",
+        "NaKL_1_V(t)_Response_to_I_L63_x_time_dilation=1.0_(lower,upper)=(-66.67,200)pA",
+        "NaKL_1_V(t)_Response_to_I_L63_x_time_dilation=1.0_(lower,upper)=(-100.0,300)pA",
+        "NaKL_1_V(t)_Response_to_I_L63_x_time_dilation=1.0_(lower,upper)=(-166.67,500)pA",
+        "NaKL_1_V(t)_Response_to_I_L63_x_time_dilation=1.0_(lower,upper)=(-200.0,600)pA",
+        "NaKL_1_V(t)_Response_to_I_L63_x_time_dilation=1.0_(lower,upper)=(-233.33,700)pA",
+        "NaKL_1_V(t)_Response_to_I_L63_y_time_dilation=1.0_(lower,upper)=(-33.33,100)pA",
+        "NaKL_1_V(t)_Response_to_I_L63_y_time_dilation=1.0_(lower,upper)=(-66.67,200)pA",
+        "NaKL_1_V(t)_Response_to_I_L63_y_time_dilation=1.0_(lower,upper)=(-100.0,300)pA",
+        "NaKL_1_V(t)_Response_to_I_L63_y_time_dilation=1.0_(lower,upper)=(-166.67,500)pA",
+        "NaKL_1_V(t)_Response_to_I_L63_y_time_dilation=1.0_(lower,upper)=(-200.0,600)pA",
+        "NaKL_1_V(t)_Response_to_I_L63_y_time_dilation=1.0_(lower,upper)=(-233.33,700)pA",
+        "NaKL_1_V(t)_Response_to_I_L63_z_time_dilation=1.0_(lower,upper)=(-33.33,100)pA",
+        "NaKL_1_V(t)_Response_to_I_L63_z_time_dilation=1.0_(lower,upper)=(-66.67,200)pA",
+        "NaKL_1_V(t)_Response_to_I_L63_z_time_dilation=1.0_(lower,upper)=(-100.0,300)pA",
+        "NaKL_1_V(t)_Response_to_I_L63_z_time_dilation=1.0_(lower,upper)=(-166.67,500)pA",
+        "NaKL_1_V(t)_Response_to_I_L63_z_time_dilation=1.0_(lower,upper)=(-200.0,600)pA",
+        "NaKL_1_V(t)_Response_to_I_L63_z_time_dilation=1.0_(lower,upper)=(-233.33,700)pA",
+        "NaKL_1_V(t)_Response_to_I_Colpitts_x_time_dilation=1.0_(lower,upper)=(-33.33,100)pA",
+        "NaKL_1_V(t)_Response_to_I_Colpitts_x_time_dilation=1.0_(lower,upper)=(-66.67,200)pA",
+        "NaKL_1_V(t)_Response_to_I_Colpitts_x_time_dilation=1.0_(lower,upper)=(-100.0,300)pA",
+        "NaKL_1_V(t)_Response_to_I_Colpitts_x_time_dilation=1.0_(lower,upper)=(-166.67,500)pA",
+        "NaKL_1_V(t)_Response_to_I_Colpitts_x_time_dilation=1.0_(lower,upper)=(-200.0,600)pA",
+        "NaKL_1_V(t)_Response_to_I_Colpitts_x_time_dilation=1.0_(lower,upper)=(-233.33,700)pA",
+        "NaKL_1_V(t)_Response_to_I_Colpitts_y_time_dilation=1.0_(lower,upper)=(-33.33,100)pA",
+        "NaKL_1_V(t)_Response_to_I_Colpitts_y_time_dilation=1.0_(lower,upper)=(-66.67,200)pA",
+        "NaKL_1_V(t)_Response_to_I_Colpitts_y_time_dilation=1.0_(lower,upper)=(-100.0,300)pA",
+        "NaKL_1_V(t)_Response_to_I_Colpitts_y_time_dilation=1.0_(lower,upper)=(-166.67,500)pA",
+        "NaKL_1_V(t)_Response_to_I_Colpitts_y_time_dilation=1.0_(lower,upper)=(-200.0,600)pA",
+        "NaKL_1_V(t)_Response_to_I_Colpitts_y_time_dilation=1.0_(lower,upper)=(-233.33,700)pA"
+    ],
+    "names_to_select_testing": [
+        "NaKL_1_V(t)_Response_to_I_Colpitts_z_time_dilation=1.0_(lower,upper)=(-166.67,500)pA"
+    ]
+}
